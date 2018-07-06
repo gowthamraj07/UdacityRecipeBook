@@ -1,6 +1,5 @@
 package com.asanam.udacityrecipebook.fragments;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,19 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.asanam.udacityrecipebook.R;
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.dash.DashChunkSource;
-import com.google.android.exoplayer2.source.dash.DashMediaSource;
-import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -38,6 +33,7 @@ public class ExoPlayerFragment extends Fragment {
 
     private long playbackPosition;
     private int currentWindow;
+    private MediaSource mediaSource;
 
     public ExoPlayerFragment() {
         playWhenReady = true;
@@ -75,13 +71,14 @@ public class ExoPlayerFragment extends Fragment {
             playerView.requestFocus();
 
             bandwidthMeter = new DefaultBandwidthMeter();
-            TrackSelection.Factory adaptiveTrackSelectionFactory =
-                    new AdaptiveTrackSelection.Factory(bandwidthMeter);
+            DefaultTrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
+            player = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector);
 
-            player = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(getActivity()),
-                    new DefaultTrackSelector(adaptiveTrackSelectionFactory), new DefaultLoadControl());
+            Uri videoUri = Uri.parse(URI_STRING);
 
-            player.setPlayWhenReady(playWhenReady);
+            DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("ExoPlayerExample");
+            ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+            mediaSource = new ExtractorMediaSource(videoUri, dataSourceFactory, extractorsFactory, null, null);
 
             playerView.setPlayer(player);
 
@@ -89,8 +86,7 @@ public class ExoPlayerFragment extends Fragment {
             player.seekTo(currentWindow, playbackPosition);
         }
 
-        MediaSource mediaSource = buildMediaSource(Uri.parse(URI_STRING));
-        player.prepare(mediaSource, true, false);
+        player.prepare(mediaSource);
     }
 
     private void releasePlayer() {
@@ -101,15 +97,6 @@ public class ExoPlayerFragment extends Fragment {
             player.release();
             player = null;
         }
-    }
-
-    private MediaSource buildMediaSource(Uri uri) {
-        String ua = Util.getUserAgent(getActivity(), "UdacityRecipeBook");
-        DashChunkSource.Factory dashChunkSourceFactory = new DefaultDashChunkSource.Factory(
-                new DefaultHttpDataSourceFactory(ua, bandwidthMeter));
-        DataSource.Factory manifestDataSourceFactory = new DefaultHttpDataSourceFactory(ua);
-        return new DashMediaSource.Factory(dashChunkSourceFactory, manifestDataSourceFactory).
-                createMediaSource(uri);
     }
 
     @Override
