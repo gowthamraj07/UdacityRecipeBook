@@ -12,6 +12,7 @@ public class DBContract implements BaseColumns {
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_SERVINGS = "servings";
         public static final String COLUMN_IMAGE = "image";
+        public static final String COLUMN_RECIPE_ID = "id";
     }
 
     public static class IngredientsTable implements BaseColumns{
