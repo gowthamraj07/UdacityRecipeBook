@@ -20,14 +20,17 @@ class RecipeDBRepository implements DBRepository {
     }
 
     @Override
-    public Cursor saveRecipe(RecipeListDto dtoList) {
-
+    public void saveRecipe(RecipeListDto dtoList) {
         List<Recipe> recipes = new ArrayList<>();
         for (RecipeDto recipeDto : dtoList.getRecipeDtoList()) {
             recipes.add(new Recipe(recipeDto));
         }
 
         manager.addRecipes(recipes);
+    }
+
+    @Override
+    public Cursor queryRecipeNames() {
         return manager.queryAllRecipeNames();
     }
 }

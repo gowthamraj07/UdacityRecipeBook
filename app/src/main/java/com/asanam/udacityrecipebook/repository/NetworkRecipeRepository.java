@@ -28,5 +28,7 @@ class NetworkRecipeRepository implements RecipeRepository {
         if (!recipeListDto.getRecipeDtoList().isEmpty()) {
             dbRepository.saveRecipe(recipeListDto);
         }
+
+        callback.onSuccess(dbRepository.queryRecipeNames());
     }
 }
