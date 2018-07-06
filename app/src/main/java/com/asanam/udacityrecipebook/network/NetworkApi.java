@@ -1,5 +1,5 @@
 package com.asanam.udacityrecipebook.network;
 
 public interface NetworkApi {
-    void get(String url);
+    String get(String url);
 }
