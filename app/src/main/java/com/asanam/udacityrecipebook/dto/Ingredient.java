@@ -5,17 +5,17 @@ import com.google.gson.annotations.SerializedName;
 public class Ingredient {
 
     @SerializedName("quantity")
-    private Integer quantity;
+    private String quantity;
     @SerializedName("measure")
     private String measure;
     @SerializedName("ingredient")
     private String ingredient;
 
-    public Integer getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 
