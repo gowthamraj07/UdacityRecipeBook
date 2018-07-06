@@ -3,6 +3,7 @@ package com.asanam.udacityrecipebook.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +25,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeViewHolder> {
     @Override
     public RecipeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View recipeListItemView = LayoutInflater.from(applicationContext).inflate(R.layout.recipe_list_item_layout, parent, false);
-        TextView tvRecipeName = recipeListItemView.findViewById(R.id.tv_recipe_name);
-        RecipeViewHolder recipeViewHolder = new RecipeViewHolder(tvRecipeName);
-        return recipeViewHolder;
+        return new RecipeViewHolder(recipeListItemView);
     }
 
     @Override
@@ -37,6 +36,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeViewHolder> {
 
     @Override
     public int getItemCount() {
+        Log.i(RecipeAdapter.class.getSimpleName(), ""+cursor.getCount());
         return cursor.getCount();
     }
 }

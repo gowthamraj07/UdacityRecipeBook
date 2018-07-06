@@ -11,7 +11,7 @@ import com.asanam.udacityrecipebook.dto.RecipeListDto;
 import java.util.ArrayList;
 import java.util.List;
 
-class RecipeDBRepository implements DBRepository {
+public class RecipeDBRepository implements DBRepository {
 
     private final RecipeDBManager manager;
 

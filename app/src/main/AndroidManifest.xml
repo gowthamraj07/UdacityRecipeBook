@@ -18,6 +18,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:authorities="com.asanam.udacityrecipebook"
+            android:name=".provider.RecipeProvider"
+            android:exported="true"/>
     </application>
 
 </manifest>

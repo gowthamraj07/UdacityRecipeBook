@@ -1,5 +1,9 @@
 package com.asanam.udacityrecipebook.network;
 
 public interface NetworkApi {
-    String get(String url);
+    void get(String url, Callback apiCallback);
+
+    public interface Callback {
+        void onSuccess(String jsonResponse);
+    }
 }

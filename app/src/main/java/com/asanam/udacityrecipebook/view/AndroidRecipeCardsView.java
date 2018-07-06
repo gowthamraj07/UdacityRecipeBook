@@ -18,7 +18,7 @@ public class AndroidRecipeCardsView implements RecipeCardsView {
     @Override
     public void showCardsView(Cursor cursor) {
         RecipeAdapter adapter = new RecipeAdapter(applicationContext, cursor);
-
+        rvRecipeCard.setAdapter(adapter);
     }
 
     @Override
