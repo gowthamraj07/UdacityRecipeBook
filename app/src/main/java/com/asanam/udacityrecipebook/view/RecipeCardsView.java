@@ -1,10 +1,8 @@
 package com.asanam.udacityrecipebook.view;
 
-import com.asanam.udacityrecipebook.domain.Recipe;
-
-import java.util.List;
+import android.database.Cursor;
 
 public interface RecipeCardsView {
-    void showCardsView(List<Recipe> spyDomainList);
+    void showCardsView(Cursor spyDomainList);
     void showErrorMessage();
 }

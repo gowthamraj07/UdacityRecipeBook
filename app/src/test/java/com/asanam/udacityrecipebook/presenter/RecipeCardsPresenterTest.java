@@ -1,22 +1,20 @@
 package com.asanam.udacityrecipebook.presenter;
 
-import com.asanam.udacityrecipebook.domain.Recipe;
+import android.database.Cursor;
+
 import com.asanam.udacityrecipebook.repository.RecipeRepository;
 import com.asanam.udacityrecipebook.view.RecipeCardsView;
 
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.List;
-
-import static java.util.Collections.singletonList;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class RecipeCardsPresenterTest {
 
-    private List<Recipe> spyDomainList;
+    private Cursor spyDomainList;
 
     @Test
     public void shouldMakeRepositoryCallWhenShowCardsMethodIsCalled() {
@@ -53,7 +51,8 @@ public class RecipeCardsPresenterTest {
     private class FakeSuccessRepository implements RecipeRepository {
         @Override
         public void getRecipies(Callback callback) {
-            spyDomainList = singletonList(new Recipe());
+            spyDomainList = mock(Cursor.class);
+            when(spyDomainList.getCount()).thenReturn(1);
             callback.onSuccess(spyDomainList);
         }
     }
@@ -61,7 +60,9 @@ public class RecipeCardsPresenterTest {
     private class FakeFailureRepository implements RecipeRepository {
         @Override
         public void getRecipies(Callback callback) {
-            callback.onSuccess(Collections.EMPTY_LIST);
+            spyDomainList = mock(Cursor.class);
+            when(spyDomainList.getCount()).thenReturn(0);
+            callback.onSuccess(spyDomainList);
         }
     }
 }

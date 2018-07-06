@@ -1,10 +1,9 @@
 package com.asanam.udacityrecipebook.presenter;
 
-import com.asanam.udacityrecipebook.domain.Recipe;
+import android.database.Cursor;
+
 import com.asanam.udacityrecipebook.repository.RecipeRepository;
 import com.asanam.udacityrecipebook.view.RecipeCardsView;
-
-import java.util.List;
 
 public class RecipeCardsPresenter {
     private RecipeCardsView view;
@@ -22,8 +21,8 @@ public class RecipeCardsPresenter {
 
     private class Callback implements RecipeRepository.Callback {
         @Override
-        public void onSuccess(List<Recipe> domainList) {
-            if(domainList.isEmpty()) {
+        public void onSuccess(Cursor domainList) {
+            if(domainList.getCount() == 0) {
                 view.showErrorMessage();
             } else {
                 view.showCardsView(domainList);
