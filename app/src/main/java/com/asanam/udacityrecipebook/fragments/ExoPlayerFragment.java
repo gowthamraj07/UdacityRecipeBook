@@ -65,6 +65,18 @@ public class ExoPlayerFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        releasePlayer();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        releasePlayer();
+    }
+
     private void initializePlayer(PlayerView playerView) {
 
         if(player == null) {
@@ -100,17 +112,4 @@ public class ExoPlayerFragment extends Fragment {
             }
         }
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        releasePlayer();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        releasePlayer();
-    }
-
 }
