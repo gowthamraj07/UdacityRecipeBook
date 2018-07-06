@@ -16,7 +16,7 @@ public class RecipeCardsPresenter {
 
     public void showCards() {
         RecipeRepository.Callback callback = new Callback();
-        this.repository.getRecipies(callback);
+        this.repository.getRecipes(callback);
     }
 
     private class Callback implements RecipeRepository.Callback {

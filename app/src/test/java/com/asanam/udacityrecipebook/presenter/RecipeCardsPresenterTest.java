@@ -23,7 +23,7 @@ public class RecipeCardsPresenterTest {
 
         presenter.showCards();
 
-        verify(repository).getRecipies(any(RecipeRepository.Callback.class));
+        verify(repository).getRecipes(any(RecipeRepository.Callback.class));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class RecipeCardsPresenterTest {
 
     private class FakeSuccessRepository implements RecipeRepository {
         @Override
-        public void getRecipies(Callback callback) {
+        public void getRecipes(Callback callback) {
             spyDomainList = mock(Cursor.class);
             when(spyDomainList.getCount()).thenReturn(1);
             callback.onSuccess(spyDomainList);
@@ -59,7 +59,7 @@ public class RecipeCardsPresenterTest {
 
     private class FakeFailureRepository implements RecipeRepository {
         @Override
-        public void getRecipies(Callback callback) {
+        public void getRecipes(Callback callback) {
             spyDomainList = mock(Cursor.class);
             when(spyDomainList.getCount()).thenReturn(0);
             callback.onSuccess(spyDomainList);
