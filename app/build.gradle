@@ -27,4 +27,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation 'com.google.android.exoplayer:exoplayer:2.7.3'
+    implementation 'com.android.support:recyclerview-v7:27.0.0'
+
+    testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.8.4'
 }
