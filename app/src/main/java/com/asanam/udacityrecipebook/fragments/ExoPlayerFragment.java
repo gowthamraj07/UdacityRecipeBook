@@ -25,7 +25,7 @@ import com.google.android.exoplayer2.util.Util;
 
 public class ExoPlayerFragment extends Fragment {
 
-    public static final String URI_STRING = "http://yt-dash-mse-test.commondatastorage.googleapis.com/media/feelings_vp9-20130806-247.webm";
+    public static final String URI_STRING = "http://techslides.com/demos/sample-videos/small.mp4";
     private boolean playWhenReady;
     private PlayerView playerView;
     private SimpleExoPlayer player;
@@ -60,7 +60,7 @@ public class ExoPlayerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if ((Util.SDK_INT <= 23 || player == null)) {
+        if (Util.SDK_INT <= 23) {
             initializePlayer(playerView);
         }
     }
@@ -90,29 +90,27 @@ public class ExoPlayerFragment extends Fragment {
     }
 
     private void releasePlayer() {
-        if (player != null) {
-            playbackPosition = player.getCurrentPosition();
-            currentWindow = player.getCurrentWindowIndex();
-            playWhenReady = player.getPlayWhenReady();
-            player.release();
-            player = null;
+        if (Util.SDK_INT <= 23) {
+            if (player != null) {
+                playbackPosition = player.getCurrentPosition();
+                currentWindow = player.getCurrentWindowIndex();
+                playWhenReady = player.getPlayWhenReady();
+                player.release();
+                player = null;
+            }
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (Util.SDK_INT <= 23) {
-            releasePlayer();
-        }
+        releasePlayer();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (Util.SDK_INT > 23) {
-            releasePlayer();
-        }
+        releasePlayer();
     }
 
 }
