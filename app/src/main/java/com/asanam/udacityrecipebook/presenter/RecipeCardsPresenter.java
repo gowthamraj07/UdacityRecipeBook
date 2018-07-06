@@ -23,7 +23,11 @@ public class RecipeCardsPresenter {
     private class Callback implements RecipeRepository.Callback {
         @Override
         public void onSuccess(List<Recipe> domainList) {
-            view.showCardsView(domainList);
+            if(domainList.isEmpty()) {
+                view.showErrorMessage();
+            } else {
+                view.showCardsView(domainList);
+            }
         }
     }
 }

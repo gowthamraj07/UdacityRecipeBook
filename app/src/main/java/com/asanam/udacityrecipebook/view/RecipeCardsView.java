@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface RecipeCardsView {
     void showCardsView(List<Recipe> spyDomainList);
+    void showErrorMessage();
 }
