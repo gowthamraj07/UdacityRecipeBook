@@ -36,7 +36,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeViewHolder> {
 
     @Override
     public int getItemCount() {
-        Log.i(RecipeAdapter.class.getSimpleName(), ""+cursor.getCount());
         return cursor.getCount();
     }
 }

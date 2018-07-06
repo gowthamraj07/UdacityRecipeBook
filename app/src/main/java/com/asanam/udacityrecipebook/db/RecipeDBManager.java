@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.asanam.udacityrecipebook.domain.IngredientDomain;
 import com.asanam.udacityrecipebook.domain.Recipe;
@@ -29,7 +30,7 @@ public class RecipeDBManager extends RecipeDBHelper {
     }
 
     public Cursor queryAllRecipeNames() {
-        String SELECT_QUERY = "SELECT " + DBContract.RecipeTable.COLUMN_NAME + " FROM " + DBContract.RecipeTable.TABLE_NAME;
+        String SELECT_QUERY = "SELECT " + DBContract.RecipeTable.COLUMN_RECIPE_ID + ", " + DBContract.RecipeTable.COLUMN_NAME + " FROM " + DBContract.RecipeTable.TABLE_NAME;
         return getReadableDatabase().rawQuery(SELECT_QUERY, null);
     }
 
@@ -58,7 +59,7 @@ public class RecipeDBManager extends RecipeDBHelper {
                 DBContract.StepTable.COLUMN_RECIPE_ID + " = " + recipeId);
 
         for (ContentValues value : values) {
-            writableDatabase.insert(DBContract.IngredientsTable.TABLE_NAME, null, value);
+            writableDatabase.insert(DBContract.StepTable.TABLE_NAME, null, value);
         }
     }
 
@@ -83,5 +84,18 @@ public class RecipeDBManager extends RecipeDBHelper {
             ContentValues contentValues = step.getContentValues(recipeId);
             writableDatabase.insert(DBContract.IngredientsTable.TABLE_NAME, null, contentValues);
         }
+    }
+
+    public Cursor getSteps(Integer recipeId) {
+
+        String[] selectionArgs = {"" + recipeId};
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + DBContract.StepTable.TABLE_NAME + " WHERE "+ DBContract.StepTable.COLUMN_RECIPE_ID + " = ? " , selectionArgs);
+        while(cursor.moveToNext()) {
+            String simpleName = RecipeDBManager.class.getSimpleName();
+            Log.d(simpleName, cursor.getString(cursor.getColumnIndex(DBContract.StepTable.COLUMN_SHORT_DESCRIPTION)));
+        }
+
+        String SELECT_QUERY = "SELECT " + DBContract.StepTable.COLUMN_ID + ", " + DBContract.StepTable.COLUMN_SHORT_DESCRIPTION + " FROM " + DBContract.StepTable.TABLE_NAME + " WHERE "+ DBContract.StepTable.COLUMN_RECIPE_ID + " = ? ";
+        return getReadableDatabase().rawQuery(SELECT_QUERY, selectionArgs);
     }
 }

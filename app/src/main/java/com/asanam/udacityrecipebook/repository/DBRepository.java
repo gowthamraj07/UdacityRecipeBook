@@ -4,7 +4,9 @@ import android.database.Cursor;
 
 import com.asanam.udacityrecipebook.dto.RecipeListDto;
 
-interface DBRepository {
+public interface DBRepository {
     void saveRecipe(RecipeListDto spyDtoList);
     Cursor queryRecipeNames();
+
+    Cursor getSteps(Long recipeId);
 }

@@ -4,8 +4,10 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 
 import com.asanam.udacityrecipebook.domain.Recipe;
+import com.asanam.udacityrecipebook.domain.StepDomain;
 import com.asanam.udacityrecipebook.dto.RecipeDto;
 import com.asanam.udacityrecipebook.dto.RecipeListDto;
+import com.asanam.udacityrecipebook.dto.Step;
 import com.asanam.udacityrecipebook.network.NetworkApi;
 import com.asanam.udacityrecipebook.provider.RecipeProvider;
 import com.google.gson.GsonBuilder;
@@ -44,7 +46,16 @@ public class NetworkRecipeRepository implements RecipeRepository {
                 ContentValues[] contentValues = new ContentValues[recipeListDto.getRecipeDtoList().size()];
                 int index = 0;
                 for (RecipeDto recipeDto : recipeListDto.getRecipeDtoList()) {
-                    contentValues[index++] = new Recipe(recipeDto).getContentValues();
+                    contentValues[index] = new Recipe(recipeDto).getContentValues();
+
+                    //receive Steps
+                    ContentValues[] stepValues = new ContentValues[recipeListDto.getRecipeDtoList().get(index).getSteps().size()];
+                    int stepIndex = 0;
+                    for(Step step : recipeListDto.getRecipeDtoList().get(index).getSteps()) {
+                        stepValues[stepIndex++] = new StepDomain(step).getContentValues(recipeDto.getId());
+                    }
+                    contentResolver.bulkInsert(RecipeProvider.STEP_URI.buildUpon().appendPath(""+recipeDto.getId()).build(), stepValues);
+                    index++;
                 }
 
                 contentResolver.bulkInsert(RecipeProvider.RECIPE_NAME_URI, contentValues);

@@ -32,7 +32,7 @@ public class NetworkRecipeRepositoryTest {
         RecipeRepository.Callback callback = new SpyCallback();
         repository.getRecipes(callback);
 
-        Mockito.verify(api).get(any(String.class), apiCallback);
+        Mockito.verify(api).get(any(String.class), any(NetworkApi.Callback.class));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class NetworkRecipeRepositoryTest {
     private class FakeSuccessApi implements NetworkApi {
         @Override
         public void get(String url, Callback apiCallback) {
-            return getFakeJsonString();
+            apiCallback.onSuccess(getFakeJsonString());
         }
 
         @NonNull
@@ -81,7 +81,7 @@ public class NetworkRecipeRepositoryTest {
     private class FakeFailureApi implements NetworkApi {
         @Override
         public void get(String url, Callback apiCallback) {
-            return null;
+            apiCallback.onSuccess(null);
         }
     }
 }
