@@ -2,6 +2,7 @@ package com.asanam.udacityrecipebook.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.asanam.udacityrecipebook.domain.IngredientDomain;
@@ -48,5 +49,11 @@ public class RecipeDBManager extends RecipeDBHelper {
             ContentValues contentValues = step.getContentValues(recipeId);
             writableDatabase.insert(DBContract.IngredientsTable.TABLE_NAME, null, contentValues);
         }
+    }
+
+    public Cursor queryAllRecipeNames() {
+        String SELECT_QUERY = "SELECT " + DBContract.RecipeTable.COLUMN_NAME + " FROM " + DBContract.RecipeTable.TABLE_NAME;
+        Cursor cursor = getReadableDatabase().rawQuery(SELECT_QUERY, null);
+        return cursor;
     }
 }
