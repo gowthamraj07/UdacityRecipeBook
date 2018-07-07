@@ -1,5 +1,5 @@
 package com.asanam.udacityrecipebook.view;
 
 public interface StepDetailsView {
-    void showVideo(String url);
+    void showVideo(String url, String description);
 }

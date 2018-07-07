@@ -1,18 +1,16 @@
 package com.asanam.udacityrecipebook.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.asanam.udacityrecipebook.R;
-import com.asanam.udacityrecipebook.domain.StepDomain;
 import com.asanam.udacityrecipebook.presenter.StepDetailsPresenter;
 import com.asanam.udacityrecipebook.repository.DBRepository;
 import com.asanam.udacityrecipebook.repository.RecipeDBRepository;
@@ -22,11 +20,12 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
 
     private StepDetailsPresenter presenter;
     private Bundle bundle;
+    private View detailsFragmentView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View detailsFragmentView = inflater.inflate(R.layout.step_details_fragment_layout, container, false);
+        detailsFragmentView = inflater.inflate(R.layout.step_details_fragment_layout, container, false);
 
         DBRepository repository = new RecipeDBRepository(getContext());
         presenter = new StepDetailsPresenter(this, repository);
@@ -47,7 +46,7 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
     }
 
     @Override
-    public void showVideo(String url) {
+    public void showVideo(String url, String description) {
         bundle = new Bundle();
         bundle.putString("VIDEO_URL", url);
 
@@ -57,5 +56,8 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
         if(exoPlayerFragment != null) {
             ((ExoPlayerFragment)exoPlayerFragment).showVideo(url);
         }
+
+        TextView tvDescription = detailsFragmentView.findViewById(R.id.tv_description);
+        tvDescription.setText(description);
     }
 }

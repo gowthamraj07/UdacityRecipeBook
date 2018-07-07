@@ -19,6 +19,8 @@ public class StepDetailsPresenter {
         Cursor stepDetails = repository.getStepDetails(stepId, recipeId);
         stepDetails.moveToFirst();
         String videoUrl = stepDetails.getString(stepDetails.getColumnIndex(DBContract.StepTable.COLUMN_VIDEO_URL));
-        view.showVideo(videoUrl);
+        String description = stepDetails.getString(stepDetails.getColumnIndex(DBContract.StepTable.COLUMN_DESCRIPTION));
+
+        view.showVideo(videoUrl, description);
     }
 }
