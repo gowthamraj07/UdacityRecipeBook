@@ -16,11 +16,13 @@ public class RecipeProvider extends ContentProvider {
     private static final String RECIPE_BASE_PATH = "recipe";
     private static final String INGREDIENT_BASE_PATH = "ingredient";
     private static final String STEPS_BASE_PATH = "steps";
+    private static final String STEP_DETAILS_BASE_PATH = "step_details";
 
     public static final String BASE_URI_CONTENT = "content://" + AUTHORITY + "/";
 
     public static final Uri RECIPE_NAME_URI = Uri.parse(BASE_URI_CONTENT + RECIPE_BASE_PATH);
-    public static final Uri STEP_URI = Uri.parse(BASE_URI_CONTENT + STEPS_BASE_PATH);;
+    public static final Uri STEP_URI = Uri.parse(BASE_URI_CONTENT + STEPS_BASE_PATH);
+    public static final Uri STEP_DETAILS_URI = Uri.parse(BASE_URI_CONTENT + STEP_DETAILS_BASE_PATH);
 
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
@@ -31,6 +33,7 @@ public class RecipeProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, INGREDIENT_BASE_PATH + "/#", 11);
         uriMatcher.addURI(AUTHORITY, STEPS_BASE_PATH + "", 20);
         uriMatcher.addURI(AUTHORITY, STEPS_BASE_PATH + "/#", 21);
+        uriMatcher.addURI(AUTHORITY, STEP_DETAILS_BASE_PATH + "/#", 22);
     }
 
     private RecipeDBManager dbManager;
@@ -47,9 +50,14 @@ public class RecipeProvider extends ContentProvider {
         switch (uriMatcher.match(uri)) {
             case 1:
                 return dbManager.queryAllRecipeNames();
-            case 21:
+            case 21: {
                 Integer recipeId = Integer.parseInt(uri.getLastPathSegment());
                 return dbManager.getSteps(recipeId);
+            }
+            case 22: {
+                Integer recipeId = Integer.parseInt(uri.getLastPathSegment());
+                return dbManager.getStepDetails(recipeId, s);
+            }
         }
         return null;
     }

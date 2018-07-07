@@ -2,6 +2,7 @@ package com.asanam.udacityrecipebook.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -89,13 +90,25 @@ public class RecipeDBManager extends RecipeDBHelper {
     public Cursor getSteps(Integer recipeId) {
 
         String[] selectionArgs = {"" + recipeId};
-        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + DBContract.StepTable.TABLE_NAME + " WHERE "+ DBContract.StepTable.COLUMN_RECIPE_ID + " = ? " , selectionArgs);
-        while(cursor.moveToNext()) {
-            String simpleName = RecipeDBManager.class.getSimpleName();
-            Log.d(simpleName, cursor.getString(cursor.getColumnIndex(DBContract.StepTable.COLUMN_SHORT_DESCRIPTION)));
-        }
+        String SELECT_QUERY = "SELECT " + DBContract.StepTable.COLUMN_RECIPE_ID + ", "
+                + DBContract.StepTable.COLUMN_ID + ", "
+                + DBContract.StepTable.COLUMN_SHORT_DESCRIPTION
+                + " FROM " + DBContract.StepTable.TABLE_NAME + " WHERE "
+                + DBContract.StepTable.COLUMN_RECIPE_ID + " = ? ";
 
-        String SELECT_QUERY = "SELECT " + DBContract.StepTable.COLUMN_ID + ", " + DBContract.StepTable.COLUMN_SHORT_DESCRIPTION + " FROM " + DBContract.StepTable.TABLE_NAME + " WHERE "+ DBContract.StepTable.COLUMN_RECIPE_ID + " = ? ";
+        return getReadableDatabase().rawQuery(SELECT_QUERY, selectionArgs);
+    }
+
+    public Cursor getStepDetails(Integer recipeId, String selection) {
+
+        String[] selectionArgs = {"" + recipeId};
+        String SELECT_QUERY = "SELECT * "
+                + " FROM " + DBContract.StepTable.TABLE_NAME + " WHERE "
+                + DBContract.StepTable.COLUMN_RECIPE_ID + " = ? AND "
+                + selection;
+
+        Log.d(RecipeDBManager.class.getSimpleName(), SELECT_QUERY);
+
         return getReadableDatabase().rawQuery(SELECT_QUERY, selectionArgs);
     }
 }

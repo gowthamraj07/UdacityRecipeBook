@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.asanam.udacityrecipebook.R;
 import com.asanam.udacityrecipebook.adapter.StepsAdapter;
+import com.asanam.udacityrecipebook.dto.Step;
 import com.asanam.udacityrecipebook.presenter.DetailsPresenter;
 import com.asanam.udacityrecipebook.repository.DBRepository;
 import com.asanam.udacityrecipebook.repository.RecipeDBRepository;
@@ -22,6 +23,7 @@ public class RecipeDetailsFragment extends Fragment implements DetailsView {
 
     private DetailsPresenter presenter;
     private RecyclerView rvSteps;
+    private StepSelectionListener listener;
 
     @Nullable
     @Override
@@ -29,6 +31,13 @@ public class RecipeDetailsFragment extends Fragment implements DetailsView {
         View detailsView = inflater.inflate(R.layout.recipe_details_fragment_layout, container, false);
 
         rvSteps = detailsView.findViewById(R.id.rv_steps);
+
+        if(getActivity() instanceof StepSelectionListener) {
+            listener = (StepSelectionListener) getActivity();
+        } else {
+            throw new ClassCastException(getActivity().toString()
+                    + " must implement StepSelectionListener");
+        }
 
         DBRepository repository = new RecipeDBRepository(getContext());
         presenter = new DetailsPresenter(this, repository);
@@ -45,7 +54,11 @@ public class RecipeDetailsFragment extends Fragment implements DetailsView {
 
     @Override
     public void showDetails(Cursor cursor) {
-        StepsAdapter adapter = new StepsAdapter(cursor, getContext());
+        StepsAdapter adapter = new StepsAdapter(cursor, getContext(), listener);
         rvSteps.setAdapter(adapter);
+    }
+
+    public interface StepSelectionListener {
+        void onSelectStep(long recipeId, long id);
     }
 }

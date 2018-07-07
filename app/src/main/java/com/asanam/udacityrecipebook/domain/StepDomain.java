@@ -1,6 +1,7 @@
 package com.asanam.udacityrecipebook.domain;
 
 import android.content.ContentValues;
+import android.util.Log;
 
 import com.asanam.udacityrecipebook.db.DBContract;
 import com.asanam.udacityrecipebook.dto.Step;
@@ -20,6 +21,9 @@ public class StepDomain {
         contentValues.put(DBContract.StepTable.COLUMN_SHORT_DESCRIPTION, step.getShortDescription());
         contentValues.put(DBContract.StepTable.COLUMN_THUMBNAIL_URL, step.getThumbnailURL());
         contentValues.put(DBContract.StepTable.COLUMN_VIDEO_URL, step.getVideoURL());
+
+        Log.d(StepDomain.class.getSimpleName(), "Des : "+step.getShortDescription()+", URL "+step.getVideoURL());
+
         return contentValues;
     }
 }

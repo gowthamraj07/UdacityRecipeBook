@@ -9,4 +9,5 @@ public interface DBRepository {
     Cursor queryRecipeNames();
 
     Cursor getSteps(Long recipeId);
+    Cursor getStepDetails(Long stepId, Long recipeId);
 }

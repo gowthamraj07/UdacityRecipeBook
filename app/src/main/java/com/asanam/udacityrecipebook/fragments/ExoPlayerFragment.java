@@ -25,7 +25,7 @@ import com.google.android.exoplayer2.util.Util;
 
 public class ExoPlayerFragment extends Fragment {
 
-    public static final String URI_STRING = "http://techslides.com/demos/sample-videos/small.mp4";
+    public static String URI_STRING = "http://techslides.com/demos/sample-videos/small.mp4";
     private boolean playWhenReady;
     private PlayerView playerView;
     private SimpleExoPlayer player;
@@ -52,15 +52,16 @@ public class ExoPlayerFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (Util.SDK_INT > 23) {
-            initializePlayer(playerView);
-        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (Util.SDK_INT <= 23) {
+        if(getArguments() != null) {
+            URI_STRING = getArguments().getString("VIDEO_URL");
+        }
+
+        if (Util.SDK_INT > 23 && URI_STRING != null) {
             initializePlayer(playerView);
         }
     }
@@ -110,6 +111,14 @@ public class ExoPlayerFragment extends Fragment {
                 player.release();
                 player = null;
             }
+        }
+    }
+
+    public void showVideo(String url) {
+        URI_STRING = url;
+
+        if (Util.SDK_INT > 23 && URI_STRING != null) {
+            initializePlayer(playerView);
         }
     }
 }
