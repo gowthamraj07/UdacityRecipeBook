@@ -20,7 +20,44 @@ public class StepDetailsPresenter {
         stepDetails.moveToFirst();
         String videoUrl = stepDetails.getString(stepDetails.getColumnIndex(DBContract.StepTable.COLUMN_VIDEO_URL));
         String description = stepDetails.getString(stepDetails.getColumnIndex(DBContract.StepTable.COLUMN_DESCRIPTION));
+        String thumbnailUrl = stepDetails.getString(stepDetails.getColumnIndex(DBContract.StepTable.COLUMN_THUMBNAIL_URL));
 
+        Cursor previous = repository.getPreviousStepDetails(recipeId, stepId);
+        if(previous.getCount() > 0) {
+
+        } else {
+            view.hidePrevious();
+        }
+
+        if(videoUrl != null && !videoUrl.isEmpty()) {
+            showVideo(videoUrl, description);
+            return;
+        }
+
+        if(thumbnailUrl != null && !thumbnailUrl.isEmpty()) {
+            if(thumbnailUrl.endsWith(".mp4")) {
+                showVideo(thumbnailUrl, description);
+            } else {
+                showImage(description, thumbnailUrl);
+            }
+            return;
+        }
+
+        view.hideImage();
+        view.hideVideo();
+
+        if(description != null && !description.isEmpty()) {
+            view.showDescription(description);
+        }
+    }
+
+    private void showImage(String description, String thumbnailUrl) {
+        view.showImage(thumbnailUrl, description);
+        view.hideVideo();
+    }
+
+    private void showVideo(String videoUrl, String description) {
         view.showVideo(videoUrl, description);
+        view.hideImage();
     }
 }

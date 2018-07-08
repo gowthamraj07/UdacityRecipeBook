@@ -103,7 +103,7 @@ public class ExoPlayerFragment extends Fragment {
     }
 
     private void releasePlayer() {
-        if (Util.SDK_INT <= 23) {
+        if (Util.SDK_INT > 23) {
             if (player != null) {
                 playbackPosition = player.getCurrentPosition();
                 currentWindow = player.getCurrentWindowIndex();
