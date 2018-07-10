@@ -23,8 +23,8 @@ public class StepDetailsPresenterTest {
     private static final int DESCRIPTION_INDEX = 2;
     private static final String ANY_DESCRIPTION = "any description";
     private static final int IMAGE_URL_INDEX = 3;
-    public static final String IMAGE_MP4_URL = "http://hi.mp4";
-    public static final String IMAGE_URL = "http://";
+    private static final String IMAGE_MP4_URL = "http://hi.mp4";
+    private static final String IMAGE_URL = "http://";
 
     @Test
     public void shouldMakeRepositoryCall() {
@@ -165,5 +165,105 @@ public class StepDetailsPresenterTest {
         presenter.showStepDetailsScreen(RECIPE_ID, STEP_ID);
 
         verify(view).hidePrevious();
+    }
+
+    @Test
+    public void shouldShowPreviousButtonWhenThereAreAnyPreviousStep() {
+        StepDetailsView view = Mockito.mock(StepDetailsView.class);
+        DBRepository repository = Mockito.mock(DBRepository.class);
+        StepDetailsPresenter presenter = new StepDetailsPresenter(view, repository);
+
+        Cursor cursor = mock(Cursor.class);
+        when(cursor.getColumnIndex(DBContract.StepTable.COLUMN_VIDEO_URL)).thenReturn(VIDEO_URL_INDEX);
+        when(cursor.getColumnIndex(DBContract.StepTable.COLUMN_DESCRIPTION)).thenReturn(DESCRIPTION_INDEX);
+        when(cursor.getString(VIDEO_URL_INDEX)).thenReturn(VIDEO_URL);
+        when(cursor.getString(DESCRIPTION_INDEX)).thenReturn(ANY_DESCRIPTION);
+        when(repository.getStepDetails(STEP_ID, RECIPE_ID)).thenReturn(cursor);
+        Cursor previousCursor = mock(Cursor.class);
+        when(previousCursor.getCount()).thenReturn(1);
+        when(repository.getPreviousStepDetails(RECIPE_ID, STEP_ID)).thenReturn(previousCursor);
+        presenter.showStepDetailsScreen(RECIPE_ID, STEP_ID);
+
+        verify(view).showPrevious();
+    }
+
+    @Test
+    public void shouldMakeRepositoryCallToCheckForNextSteps() {
+        StepDetailsView view = Mockito.mock(StepDetailsView.class);
+        DBRepository repository = Mockito.mock(DBRepository.class);
+        StepDetailsPresenter presenter = new StepDetailsPresenter(view, repository);
+
+        Cursor cursor = mock(Cursor.class);
+        when(cursor.getColumnIndex(DBContract.StepTable.COLUMN_VIDEO_URL)).thenReturn(VIDEO_URL_INDEX);
+        when(cursor.getColumnIndex(DBContract.StepTable.COLUMN_DESCRIPTION)).thenReturn(DESCRIPTION_INDEX);
+        when(cursor.getString(VIDEO_URL_INDEX)).thenReturn(VIDEO_URL);
+        when(cursor.getString(DESCRIPTION_INDEX)).thenReturn(ANY_DESCRIPTION);
+        when(repository.getStepDetails(STEP_ID, RECIPE_ID)).thenReturn(cursor);
+        Cursor previousCursor = mock(Cursor.class);
+        when(previousCursor.getCount()).thenReturn(0);
+        when(repository.getNextStepDetails(RECIPE_ID, STEP_ID)).thenReturn(previousCursor);
+        presenter.showStepDetailsScreen(RECIPE_ID, STEP_ID);
+
+        verify(repository).getNextStepDetails(RECIPE_ID, STEP_ID);
+    }
+
+    @Test
+    public void shouldShowNextButtonWhenNextStepsAreAvailable() {
+        StepDetailsView view = Mockito.mock(StepDetailsView.class);
+        DBRepository repository = Mockito.mock(DBRepository.class);
+        StepDetailsPresenter presenter = new StepDetailsPresenter(view, repository);
+
+        Cursor cursor = mock(Cursor.class);
+        when(cursor.getColumnIndex(DBContract.StepTable.COLUMN_VIDEO_URL)).thenReturn(VIDEO_URL_INDEX);
+        when(cursor.getColumnIndex(DBContract.StepTable.COLUMN_DESCRIPTION)).thenReturn(DESCRIPTION_INDEX);
+        when(cursor.getString(VIDEO_URL_INDEX)).thenReturn(VIDEO_URL);
+        when(cursor.getString(DESCRIPTION_INDEX)).thenReturn(ANY_DESCRIPTION);
+        when(repository.getStepDetails(STEP_ID, RECIPE_ID)).thenReturn(cursor);
+        Cursor previousCursor = mock(Cursor.class);
+        when(previousCursor.getCount()).thenReturn(1);
+        when(repository.getNextStepDetails(RECIPE_ID, STEP_ID)).thenReturn(previousCursor);
+        presenter.showStepDetailsScreen(RECIPE_ID, STEP_ID);
+
+        verify(view).showNext();
+    }
+
+    @Test
+    public void shouldHideNextButtonWhenNextStepsAreNotAvailable() {
+        StepDetailsView view = Mockito.mock(StepDetailsView.class);
+        DBRepository repository = Mockito.mock(DBRepository.class);
+        StepDetailsPresenter presenter = new StepDetailsPresenter(view, repository);
+
+        Cursor cursor = mock(Cursor.class);
+        when(cursor.getColumnIndex(DBContract.StepTable.COLUMN_VIDEO_URL)).thenReturn(VIDEO_URL_INDEX);
+        when(cursor.getColumnIndex(DBContract.StepTable.COLUMN_DESCRIPTION)).thenReturn(DESCRIPTION_INDEX);
+        when(cursor.getString(VIDEO_URL_INDEX)).thenReturn(VIDEO_URL);
+        when(cursor.getString(DESCRIPTION_INDEX)).thenReturn(ANY_DESCRIPTION);
+        when(repository.getStepDetails(STEP_ID, RECIPE_ID)).thenReturn(cursor);
+        Cursor previousCursor = mock(Cursor.class);
+        when(previousCursor.getCount()).thenReturn(0);
+        when(repository.getNextStepDetails(RECIPE_ID, STEP_ID)).thenReturn(previousCursor);
+        presenter.showStepDetailsScreen(RECIPE_ID, STEP_ID);
+
+        verify(view).hideNext();
+    }
+
+    @Test
+    public void shouldResetViewWhenShowDetailsScreenIsCalled() {
+        StepDetailsView view = Mockito.mock(StepDetailsView.class);
+        DBRepository repository = Mockito.mock(DBRepository.class);
+        StepDetailsPresenter presenter = new StepDetailsPresenter(view, repository);
+
+        Cursor cursor = mock(Cursor.class);
+        when(cursor.getColumnIndex(DBContract.StepTable.COLUMN_VIDEO_URL)).thenReturn(VIDEO_URL_INDEX);
+        when(cursor.getColumnIndex(DBContract.StepTable.COLUMN_DESCRIPTION)).thenReturn(DESCRIPTION_INDEX);
+        when(cursor.getString(VIDEO_URL_INDEX)).thenReturn(VIDEO_URL);
+        when(cursor.getString(DESCRIPTION_INDEX)).thenReturn(ANY_DESCRIPTION);
+        when(repository.getStepDetails(STEP_ID, RECIPE_ID)).thenReturn(cursor);
+        Cursor previousCursor = mock(Cursor.class);
+        when(previousCursor.getCount()).thenReturn(0);
+        when(repository.getNextStepDetails(RECIPE_ID, STEP_ID)).thenReturn(previousCursor);
+        presenter.showStepDetailsScreen(RECIPE_ID, STEP_ID);
+
+        verify(view).reset();
     }
 }

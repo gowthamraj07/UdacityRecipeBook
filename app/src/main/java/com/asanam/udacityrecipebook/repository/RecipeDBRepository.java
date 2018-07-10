@@ -37,7 +37,13 @@ public class RecipeDBRepository implements DBRepository {
 
     @Override
     public Cursor getPreviousStepDetails(Long recipeId, Long stepId) {
+        stepId = stepId - 1;
+        return context.getContentResolver().query(RecipeProvider.STEP_DETAILS_URI.buildUpon().appendPath(""+recipeId).build(), null, DBContract.StepTable.COLUMN_ID+" = "+stepId, null, null);
+    }
 
-        return null;
+    @Override
+    public Cursor getNextStepDetails(Long recipeId, Long stepId) {
+        stepId = stepId + 1;
+        return context.getContentResolver().query(RecipeProvider.STEP_DETAILS_URI.buildUpon().appendPath(""+recipeId).build(), null, DBContract.StepTable.COLUMN_ID+" = "+stepId, null, null);
     }
 }

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,14 +27,15 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
     private View detailsFragmentView;
     private Fragment exoPlayerFragment;
     private ImageView ivThumbnail;
+    private Button btnPrevious;
+    private Button btnNext;
+    private long recipeId;
+    private long stepId;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         detailsFragmentView = inflater.inflate(R.layout.step_details_fragment_layout, container, false);
-
-        exoPlayerFragment = getChildFragmentManager().findFragmentById(R.id.frag_exo_player);
-        ivThumbnail = detailsFragmentView.findViewById(R.id.iv_thumbnail);
 
         DBRepository repository = new RecipeDBRepository(getContext());
         presenter = new StepDetailsPresenter(this, repository);
@@ -45,10 +47,10 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
     public void onResume() {
         super.onResume();
 
-        long recipeId = getArguments().getLong("RECIPE_ID");
-        long stepId = getArguments().getLong("STEP_ID");
+        recipeId = getArguments().getLong("RECIPE_ID");
+        stepId = getArguments().getLong("STEP_ID");
 
-        Log.d(StepDetailsFragment.class.getSimpleName(), "Recipe id : "+recipeId+", Step id : "+stepId);
+        Log.d(StepDetailsFragment.class.getSimpleName(), "Recipe id : "+ recipeId +", Step id : "+ stepId);
 
         presenter.showStepDetailsScreen(recipeId, stepId);
     }
@@ -81,18 +83,68 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
 
     @Override
     public void hideVideo() {
-        exoPlayerFragment.getView().setVisibility(View.GONE);
-        getChildFragmentManager().beginTransaction().remove(exoPlayerFragment).commit();
+        if(exoPlayerFragment != null && exoPlayerFragment.getView() != null) {
+            exoPlayerFragment.getView().setVisibility(View.GONE);
+            ((ExoPlayerFragment) exoPlayerFragment).releasePlayer();
+        }
     }
 
     @Override
     public void hidePrevious() {
+        btnPrevious.setVisibility(View.GONE);
+    }
 
+    @Override
+    public void showPrevious() {
+        btnPrevious.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showNext() {
+        btnNext.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideNext() {
+        btnNext.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void reset() {
+        exoPlayerFragment = getChildFragmentManager().findFragmentById(R.id.frag_exo_player);
+        if(exoPlayerFragment != null && exoPlayerFragment.getView() != null) {
+            exoPlayerFragment.getView().setVisibility(View.VISIBLE);
+        }
+        ivThumbnail = detailsFragmentView.findViewById(R.id.iv_thumbnail);
+
+        btnPrevious = detailsFragmentView.findViewById(R.id.btn_previous);
+        btnPrevious.setOnClickListener(new PreviousButtonListener());
+
+        btnNext = detailsFragmentView.findViewById(R.id.btn_next);
+        btnNext.setOnClickListener(new NextButtonListener());
     }
 
     @Override
     public void showDescription(String description) {
         TextView tvDescription = detailsFragmentView.findViewById(R.id.tv_description);
         tvDescription.setText(description);
+    }
+
+    private class PreviousButtonListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            stepId--;
+            ((ExoPlayerFragment) exoPlayerFragment).releasePlayer();
+            presenter.showStepDetailsScreen(recipeId, stepId);
+        }
+    }
+
+    private class NextButtonListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            stepId++;
+            ((ExoPlayerFragment) exoPlayerFragment).releasePlayer();
+            presenter.showStepDetailsScreen(recipeId, stepId);
+        }
     }
 }

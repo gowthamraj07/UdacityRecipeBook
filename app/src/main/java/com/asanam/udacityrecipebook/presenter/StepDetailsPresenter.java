@@ -16,6 +16,9 @@ public class StepDetailsPresenter {
     }
 
     public void showStepDetailsScreen(Long recipeId, Long stepId) {
+
+        view.reset();
+
         Cursor stepDetails = repository.getStepDetails(stepId, recipeId);
         stepDetails.moveToFirst();
         String videoUrl = stepDetails.getString(stepDetails.getColumnIndex(DBContract.StepTable.COLUMN_VIDEO_URL));
@@ -23,16 +26,24 @@ public class StepDetailsPresenter {
         String thumbnailUrl = stepDetails.getString(stepDetails.getColumnIndex(DBContract.StepTable.COLUMN_THUMBNAIL_URL));
 
         Cursor previous = repository.getPreviousStepDetails(recipeId, stepId);
-        if(previous.getCount() > 0) {
-
+        if(previous!= null && previous.getCount() > 0) {
+            view.showPrevious();
         } else {
             view.hidePrevious();
+        }
+
+        Cursor next = repository.getNextStepDetails(recipeId, stepId);
+        if(next != null && next.getCount() > 0) {
+            view.showNext();
+        } else {
+            view.hideNext();
         }
 
         if(videoUrl != null && !videoUrl.isEmpty()) {
             showVideo(videoUrl, description);
             return;
         }
+
 
         if(thumbnailUrl != null && !thumbnailUrl.isEmpty()) {
             if(thumbnailUrl.endsWith(".mp4")) {

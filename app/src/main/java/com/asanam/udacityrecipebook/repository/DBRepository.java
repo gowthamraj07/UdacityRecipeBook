@@ -12,4 +12,6 @@ public interface DBRepository {
     Cursor getStepDetails(Long stepId, Long recipeId);
 
     Cursor getPreviousStepDetails(Long recipeId, Long stepId);
+
+    Cursor getNextStepDetails(Long recipeId, Long stepId);
 }
