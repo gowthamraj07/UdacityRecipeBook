@@ -1,5 +1,6 @@
 package com.asanam.udacityrecipebook.fragments;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -35,6 +36,8 @@ public class ExoPlayerFragment extends Fragment {
     private int currentWindow;
     private MediaSource mediaSource;
 
+    private ExoPlayerListener listener = null;
+
     public ExoPlayerFragment() {
         playWhenReady = true;
     }
@@ -50,6 +53,16 @@ public class ExoPlayerFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (!(getActivity() instanceof ExoPlayerListener)) {
+            throw new ClassCastException(getActivity().toString() + "Should implement ExoPlayerListener");
+        }
+
+        listener = (ExoPlayerListener) getActivity();
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
     }
@@ -57,7 +70,7 @@ public class ExoPlayerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(getArguments() != null) {
+        if (getArguments() != null) {
             URI_STRING = getArguments().getString("VIDEO_URL");
         }
 
@@ -80,7 +93,7 @@ public class ExoPlayerFragment extends Fragment {
 
     private void initializePlayer(PlayerView playerView) {
 
-        if(player == null) {
+        if (player == null) {
             playerView.requestFocus();
 
             bandwidthMeter = new DefaultBandwidthMeter();
@@ -96,10 +109,10 @@ public class ExoPlayerFragment extends Fragment {
             playerView.setPlayer(player);
 
             player.setPlayWhenReady(playWhenReady);
-            player.seekTo(currentWindow, playbackPosition);
         }
 
         player.prepare(mediaSource);
+        player.seekTo(currentWindow, playbackPosition);
     }
 
     public void releasePlayer() {
@@ -110,6 +123,10 @@ public class ExoPlayerFragment extends Fragment {
                 playWhenReady = player.getPlayWhenReady();
                 player.release();
                 player = null;
+
+                if (listener != null) {
+                    listener.onReleaseExoPlayer(playbackPosition, currentWindow);
+                }
             }
         }
     }
@@ -120,5 +137,14 @@ public class ExoPlayerFragment extends Fragment {
         if (Util.SDK_INT > 23 && URI_STRING != null) {
             initializePlayer(playerView);
         }
+    }
+
+    public void seekTo(long playbackPosition, int currentWindow) {
+        this.playbackPosition = playbackPosition;
+        this.currentWindow = currentWindow;
+    }
+
+    public interface ExoPlayerListener {
+        void onReleaseExoPlayer(long playbackPosition, int currentWindow);
     }
 }
