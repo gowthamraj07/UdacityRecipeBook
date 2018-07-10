@@ -8,13 +8,17 @@ import android.os.Bundle;
 import com.asanam.udacityrecipebook.fragments.ExoPlayerFragment;
 import com.asanam.udacityrecipebook.fragments.StepDetailsFragment;
 
-public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerFragment.ExoPlayerListener {
+public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerFragment.ExoPlayerListener, StepDetailsFragment.StepDetailListener {
 
     public static final String PLAYBACK_POSITION = "playbackPosition";
     public static final String CURRENT_WINDOW = "currentWindow";
-    private long playbackPosition;
-    private int currentWindow;
+    public static final String RECIPE_ID = "RECIPE_ID";
+    public static final String STEP_ID = "STEP_ID";
     private Fragment stepDetailsFragment;
+    private int currentWindow = 0;
+    private long playbackPosition = 0;
+    private long recipeId;
+    private long stepId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,12 +28,22 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
         stepDetailsFragment = getSupportFragmentManager().findFragmentById(R.id.frag_step_details_fragment);
         Bundle stepDetails = getIntent().getBundleExtra("STEP_DETAILS");
 
-        stepDetailsFragment.setArguments(stepDetails);
+        recipeId = stepDetails.getLong("RECIPE_ID");
+        stepId = stepDetails.getLong("STEP_ID");
+
+//        stepDetailsFragment.setArguments(stepDetails);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        ((StepDetailsFragment) stepDetailsFragment).showStepDetailsScreen(recipeId, stepId);
+
+        Fragment exoPlayer = stepDetailsFragment.getChildFragmentManager().findFragmentById(R.id.frag_exo_player);
+        if (exoPlayer != null) {
+            ((ExoPlayerFragment) exoPlayer).seekTo(playbackPosition, currentWindow);
+        }
     }
 
     @Override
@@ -42,6 +56,8 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
     protected void onSaveInstanceState(Bundle outState) {
         outState.putLong(PLAYBACK_POSITION, playbackPosition);
         outState.putInt(CURRENT_WINDOW, currentWindow);
+        outState.putLong(RECIPE_ID, recipeId);
+        outState.putLong(STEP_ID, stepId);
         super.onSaveInstanceState(outState);
     }
 
@@ -50,11 +66,16 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
         if(savedInstanceState != null) {
             playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION);
             currentWindow = savedInstanceState.getInt(CURRENT_WINDOW);
-            Fragment exoPlayer = stepDetailsFragment.getChildFragmentManager().findFragmentById(R.id.frag_exo_player);
-            if(exoPlayer != null) {
-                ((ExoPlayerFragment)exoPlayer).seekTo(playbackPosition, currentWindow);
-            }
+            recipeId = savedInstanceState.getLong(RECIPE_ID);
+            stepId = savedInstanceState.getLong(STEP_ID);
         }
+
         super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveStepDetails(long recipeId, long stepId) {
+        this.recipeId = recipeId;
+        this.stepId = stepId;
     }
 }

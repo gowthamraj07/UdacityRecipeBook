@@ -1,5 +1,6 @@
 package com.asanam.udacityrecipebook.fragments;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.asanam.udacityrecipebook.R;
+import com.asanam.udacityrecipebook.dto.Step;
 import com.asanam.udacityrecipebook.presenter.StepDetailsPresenter;
 import com.asanam.udacityrecipebook.repository.DBRepository;
 import com.asanam.udacityrecipebook.repository.RecipeDBRepository;
@@ -32,6 +34,8 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
     private long recipeId;
     private long stepId;
 
+    private StepDetailListener listener;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -47,12 +51,34 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
     public void onResume() {
         super.onResume();
 
-        recipeId = getArguments().getLong("RECIPE_ID");
-        stepId = getArguments().getLong("STEP_ID");
+//        recipeId = getArguments().getLong("RECIPE_ID");
+//        stepId = getArguments().getLong("STEP_ID");
+//
+//        Log.d(StepDetailsFragment.class.getSimpleName(), "Recipe id : "+ recipeId +", Step id : "+ stepId);
+//
+//        presenter.showStepDetailsScreen(recipeId, stepId);
+    }
 
-        Log.d(StepDetailsFragment.class.getSimpleName(), "Recipe id : "+ recipeId +", Step id : "+ stepId);
-
+    public void showStepDetailsScreen(long recipeId, long stepId) {
+        this.recipeId = recipeId;
+        this.stepId = stepId;
         presenter.showStepDetailsScreen(recipeId, stepId);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (!(getActivity() instanceof StepDetailListener)) {
+            throw new ClassCastException(getActivity().toString() + " must implement "+StepDetailListener.class.getSimpleName());
+        }
+
+        listener = ((StepDetailListener)getActivity());
+    }
+
+    @Override
+    public void onPause() {
+        listener.onSaveStepDetails(recipeId, stepId);
+        super.onPause();
     }
 
     @Override
@@ -146,5 +172,9 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
             ((ExoPlayerFragment) exoPlayerFragment).releasePlayer();
             presenter.showStepDetailsScreen(recipeId, stepId);
         }
+    }
+
+    public interface StepDetailListener {
+        void onSaveStepDetails(long recipeId, long stepId);
     }
 }
