@@ -132,6 +132,11 @@ public class ExoPlayerFragment extends Fragment {
     }
 
     public void showVideo(String url) {
+        if (!url.equals(URI_STRING)) {
+            this.playbackPosition = 0;
+            this.currentWindow = 0;
+        }
+
         URI_STRING = url;
 
         if (Util.SDK_INT > 23 && URI_STRING != null) {
