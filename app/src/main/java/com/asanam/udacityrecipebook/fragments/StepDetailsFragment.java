@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.Guideline;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -88,6 +89,9 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
 
         Log.d(StepDetailsFragment.class.getSimpleName(), "VIDEO_URL : "+url);
 
+        Guideline guideLine = detailsFragmentView.findViewById(R.id.guideline2);
+        guideLine.setGuidelinePercent(0.4f);
+
         if(exoPlayerFragment != null) {
             ((ExoPlayerFragment) exoPlayerFragment).showVideo(url);
         }
@@ -113,6 +117,9 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
             exoPlayerFragment.getView().setVisibility(View.GONE);
             ((ExoPlayerFragment) exoPlayerFragment).releasePlayer();
         }
+
+        Guideline guideLine = detailsFragmentView.findViewById(R.id.guideline2);
+        guideLine.setGuidelinePercent(0);
     }
 
     @Override
