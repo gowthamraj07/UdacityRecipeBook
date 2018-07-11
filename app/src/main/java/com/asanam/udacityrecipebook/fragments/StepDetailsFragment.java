@@ -104,11 +104,17 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
         showDescription(description);
         ivThumbnail.setVisibility(View.VISIBLE);
         Picasso.get().load(Uri.parse(imageUrl)).into(ivThumbnail);
+
+        Guideline guideLine = detailsFragmentView.findViewById(R.id.guideline2);
+        guideLine.setGuidelinePercent(0.4f);
     }
 
     @Override
     public void hideImage() {
         ivThumbnail.setVisibility(View.GONE);
+
+        Guideline guideLine = detailsFragmentView.findViewById(R.id.guideline2);
+        guideLine.setGuidelinePercent(0);
     }
 
     @Override
