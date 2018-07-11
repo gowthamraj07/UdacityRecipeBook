@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.asanam.udacityrecipebook.DetailsActivity;
 import com.asanam.udacityrecipebook.MainActivity;
 import com.asanam.udacityrecipebook.R;
+import com.asanam.udacityrecipebook.TabletDetailsActivity;
 import com.asanam.udacityrecipebook.db.DBContract;
 
 public class RecipeViewHolder extends RecyclerView.ViewHolder {
@@ -39,8 +40,14 @@ public class RecipeViewHolder extends RecyclerView.ViewHolder {
 
         @Override
         public void onClick(View view) {
+
             Context context = itemView.getContext();
-            Intent intent = new Intent(context, DetailsActivity.class);
+            Intent intent = null;
+            if (context.getResources().getBoolean(R.bool.is_tablet)) {
+                intent = new Intent(context, TabletDetailsActivity.class);
+            } else {
+                intent = new Intent(context, DetailsActivity.class);
+            }
             intent.putExtra("RECIPE_ID", aLong);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

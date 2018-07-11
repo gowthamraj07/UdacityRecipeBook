@@ -1,7 +1,9 @@
 package com.asanam.udacityrecipebook;
 
+import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.asanam.udacityrecipebook.network.HttpNetworkApi;
@@ -24,6 +26,10 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView rvRecipeCard = findViewById(R.id.rv_recipe_card);
         RecipeCardsView view = new AndroidRecipeCardsView(getApplicationContext(), rvRecipeCard);
+        if(getResources().getBoolean(R.bool.is_tablet)){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            rvRecipeCard.setLayoutManager(new GridLayoutManager(this, 4));
+        }
 
         NetworkApi api = new HttpNetworkApi();
         RecipeRepository repository = new NetworkRecipeRepository(api, getContentResolver());
