@@ -25,7 +25,7 @@
         <provider
             android:name=".provider.RecipeProvider"
             android:authorities="com.asanam.udacityrecipebook"
-            android:exported="false" />
+            android:exported="true" />
 
         <activity android:name=".DetailsActivity" android:launchMode="singleTop">
             <meta-data

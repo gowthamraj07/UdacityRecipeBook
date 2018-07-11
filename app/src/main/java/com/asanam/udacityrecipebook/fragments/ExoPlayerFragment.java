@@ -74,7 +74,7 @@ public class ExoPlayerFragment extends Fragment {
             URI_STRING = getArguments().getString("VIDEO_URL");
         }
 
-        if (Util.SDK_INT > 23 && URI_STRING != null) {
+        if (URI_STRING != null) {
             initializePlayer(playerView);
         }
     }
@@ -116,17 +116,15 @@ public class ExoPlayerFragment extends Fragment {
     }
 
     public void releasePlayer() {
-        if (Util.SDK_INT > 23) {
-            if (player != null) {
-                playbackPosition = player.getCurrentPosition();
-                currentWindow = player.getCurrentWindowIndex();
-                playWhenReady = player.getPlayWhenReady();
-                player.release();
-                player = null;
+        if (player != null) {
+            playbackPosition = player.getCurrentPosition();
+            currentWindow = player.getCurrentWindowIndex();
+            playWhenReady = player.getPlayWhenReady();
+            player.release();
+            player = null;
 
-                if (listener != null) {
-                    listener.onReleaseExoPlayer(playbackPosition, currentWindow);
-                }
+            if (listener != null) {
+                listener.onReleaseExoPlayer(playbackPosition, currentWindow);
             }
         }
     }
@@ -139,8 +137,12 @@ public class ExoPlayerFragment extends Fragment {
 
         URI_STRING = url;
 
-        if (Util.SDK_INT > 23 && URI_STRING != null) {
-            initializePlayer(playerView);
+        if (URI_STRING != null) {
+            try {
+                initializePlayer(playerView);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
