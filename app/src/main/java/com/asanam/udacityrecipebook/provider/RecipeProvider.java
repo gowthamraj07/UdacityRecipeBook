@@ -53,6 +53,10 @@ public class RecipeProvider extends ContentProvider {
                 return dbManager.queryAllRecipeNames();
             case 10:
                 return dbManager.queryAllIngredients();
+            case 11: {
+                long recipeId = Long.parseLong(uri.getLastPathSegment());
+                return dbManager.queryAllIngredientsFor(recipeId);
+            }
             case 21: {
                 Integer recipeId = Integer.parseInt(uri.getLastPathSegment());
                 return dbManager.getSteps(recipeId);
