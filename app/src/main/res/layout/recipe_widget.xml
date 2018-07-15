@@ -51,13 +51,14 @@
         android:src="@android:drawable/ic_media_next"
         android:text="Button" />
 
-    <ListView
+    <TextView
         android:id="@+id/lv_ingredients"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignLeft="@id/button_previous"
         android:layout_alignRight="@id/button_next"
         android:layout_below="@id/button_previous"
+        android:scrollbars="vertical"
         />
 
 </RelativeLayout>

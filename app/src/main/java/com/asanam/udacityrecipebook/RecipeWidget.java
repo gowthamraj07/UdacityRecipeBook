@@ -13,6 +13,9 @@ import android.widget.RemoteViews;
 import com.asanam.udacityrecipebook.db.DBContract;
 import com.asanam.udacityrecipebook.provider.RecipeProvider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Implementation of App Widget functionality.
  */
@@ -22,16 +25,20 @@ public class RecipeWidget extends AppWidgetProvider {
     public static final String RECIPE_ACTION = "RECIPE_ACTION";
     public static final String NEXT = "NEXT";
     public static final String PREVIOUS = "PREVIOUS";
+    public static final String ACTION = "com.asanam.udacityrecipebook.ACTION";
 
     private static Long recipeId = 0l;
     private static CharSequence widgetText;
+    private static boolean isAfterLast;
+
     private RemoteViews views;
+    private String ingredientString;
 
     void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
+                         int appWidgetId) {
         Log.d(TAG, "updateAppWidget: ");
 
-        if(!setWidgetValues(context, recipeId)) {
+        if (!setWidgetValues(context, recipeId)) {
             return;
         }
 
@@ -43,14 +50,14 @@ public class RecipeWidget extends AppWidgetProvider {
         ids[0] = appWidgetId;
 
         Intent nextIntent = new Intent(context, getClass());
-        nextIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        nextIntent.setAction(ACTION);
         nextIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         nextIntent.putExtra(RECIPE_ACTION, NEXT);
         PendingIntent pendingNextIntent = PendingIntent.getBroadcast(context, 1235, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.button_next, pendingNextIntent);
 
         Intent previousIntent = new Intent(context, getClass());
-        previousIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        previousIntent.setAction(ACTION);
         previousIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         previousIntent.putExtra(RECIPE_ACTION, PREVIOUS);
         PendingIntent pendingPreviousIntent = PendingIntent.getBroadcast(context, 1236, previousIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -62,14 +69,15 @@ public class RecipeWidget extends AppWidgetProvider {
 
     private boolean setWidgetValues(Context context, Long recipeId) {
 
-        Log.d(TAG, "setWidgetValues: recipeId = "+recipeId);
+        Log.d(TAG, "setWidgetValues: recipeId = " + recipeId);
 
         Cursor cursor = context.getContentResolver().query(RecipeProvider.RECIPE_NAME_URI, null, null, null, null);
 
-        if(recipeId != null) {
-            while(cursor.moveToNext()) {
+        if (recipeId != null) {
+            while (cursor.moveToNext()) {
                 long cursorRecipeId = cursor.getLong(cursor.getColumnIndex(DBContract.RecipeTable.COLUMN_RECIPE_ID));
-                if(cursorRecipeId > recipeId) {
+                if (cursorRecipeId > recipeId) {
+                    isAfterLast = false;
                     break;
                 }
             }
@@ -77,29 +85,38 @@ public class RecipeWidget extends AppWidgetProvider {
             cursor.moveToFirst();
         }
 
-        if(cursor.isAfterLast()) {
+        if (cursor.isAfterLast()) {
+            isAfterLast = true;
             return false;
         }
 
         widgetText = context.getString(R.string.appwidget_text);
+        ingredientString = "";
 
-        if(cursor != null && cursor.getCount()>0) {
+        if (cursor != null && cursor.getCount() > 0) {
             long aLong = cursor.getLong(cursor.getColumnIndex(DBContract.RecipeTable.COLUMN_RECIPE_ID));
             widgetText = cursor.getString(cursor.getColumnIndex(DBContract.RecipeTable.COLUMN_NAME));
 
-            //context.getContentResolver().query(RecipeProvider.INGREDIENTS_URI.buildUpon().appendPath(aLong).build(), null, null, null, null);
+            Cursor ingredients = context.getContentResolver().query(RecipeProvider.INGREDIENTS_URI.buildUpon().appendPath("" + aLong).build(), null, null, null, null);
+            StringBuilder builder = new StringBuilder();
+            while (ingredients.moveToNext()) {
+                String ingredientsString = ingredients.getString(ingredients.getColumnIndex(DBContract.IngredientsTable.COLUMN_INGREDIENT));
+                builder.append(ingredientsString).append("\n");
+            }
+            ingredientString = builder.toString();
         }
 
         // Construct the RemoteViews object
         views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget);
         views.setTextViewText(R.id.tv_recipe_title, widgetText);
+        views.setTextViewText(R.id.lv_ingredients, ingredientString);
 
         return true;
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        Log.d(TAG, "onUpdate: recipeId : "+recipeId);
+        Log.d(TAG, "onUpdate: recipeId : " + recipeId);
 
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
@@ -123,29 +140,28 @@ public class RecipeWidget extends AppWidgetProvider {
         super.onReceive(context, intent);
 
         String stringExtra = intent.getStringExtra(RECIPE_ACTION);
-        Log.d(TAG, "onReceive: recipeId : "+recipeId);
-        Log.d(TAG, "onReceive: stringExtra : "+stringExtra);
-        if(stringExtra == null || NEXT.equals(stringExtra)) {
-            ++recipeId;
+        Log.d(TAG, "onReceive: recipeId : " + recipeId);
+        Log.d(TAG, "onReceive: stringExtra : " + stringExtra);
+
+        if (stringExtra == null) {
+            return;
+        }
+
+        if (NEXT.equals(stringExtra)) {
+            if(isAfterLast) {
+                --recipeId; //Setting to previous position
+            } else {
+                ++recipeId;
+            }
         } else {
             recipeId = recipeId == 0 ? 0 : --recipeId;
         }
 
-        Log.d(TAG, "onReceive: recipeId : "+recipeId);
+        ComponentName thisWidget = new ComponentName(context, RecipeWidget.class);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
 
-        if(intent.getAction().equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
-
-            if(views == null) {
-                return;
-            }
-
-            views.setTextViewText(R.id.tv_recipe_title, widgetText);
-            ComponentName thisWidget = new ComponentName( context, RecipeWidget.class );
-            AppWidgetManager.getInstance( context ).updateAppWidget( thisWidget, views );
-        }
+        onUpdate(context, appWidgetManager, appWidgetIds);
     }
-
-
-
 }
 

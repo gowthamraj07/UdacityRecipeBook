@@ -53,7 +53,7 @@
         <receiver android:name=".RecipeWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.asanam.udacityrecipebook.NEXT" />
+                <action android:name="com.asanam.udacityrecipebook.ACTION" />
             </intent-filter>
 
             <meta-data
