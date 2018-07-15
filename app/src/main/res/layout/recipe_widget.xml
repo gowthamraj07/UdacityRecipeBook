@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_alignParentTop="true"
-    android:background="#09C"
+    android:background="@android:color/background_light"
     android:padding="@dimen/widget_margin">
 
     <TextView
@@ -16,27 +16,27 @@
         android:layout_marginRight="8dp"
         android:layout_toLeftOf="@id/button_next"
         android:layout_toRightOf="@id/button_previous"
-        android:background="#09C"
+        android:background="@android:color/background_light"
         android:contentDescription="@string/appwidget_text"
         android:ellipsize="end"
-        android:gravity="center_horizontal"
+        android:gravity="center_vertical|center_horizontal"
         android:text="@string/appwidget_text"
-        android:textColor="#ffffff"
-        android:textSize="24sp"
-        android:textStyle="bold|italic" />
+        android:textColor="@android:color/darker_gray"
+        android:textSize="24sp" />
 
     <ImageButton
         android:id="@+id/button_previous"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/button_previous"
         android:layout_alignParentBottom="false"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="false"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_alignTop="@id/button_previous"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
+        android:background="@android:color/background_light"
         android:src="@android:drawable/ic_media_previous" />
 
     <ImageButton
@@ -48,8 +48,19 @@
         android:layout_alignParentTop="true"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
+        android:background="@android:color/background_light"
         android:src="@android:drawable/ic_media_next"
         android:text="Button" />
+
+    <TextView
+        android:id="@+id/view_border"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignLeft="@id/button_previous"
+        android:layout_alignRight="@id/button_next"
+        android:layout_below="@id/button_previous"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/darker_gray" />
 
     <TextView
         android:id="@+id/lv_ingredients"
@@ -57,8 +68,8 @@
         android:layout_height="match_parent"
         android:layout_alignLeft="@id/button_previous"
         android:layout_alignRight="@id/button_next"
-        android:layout_below="@id/button_previous"
-        android:scrollbars="vertical"
-        />
+        android:layout_below="@id/view_border"
+        android:layout_marginTop="8dp"
+        android:scrollbars="vertical" />
 
 </RelativeLayout>
