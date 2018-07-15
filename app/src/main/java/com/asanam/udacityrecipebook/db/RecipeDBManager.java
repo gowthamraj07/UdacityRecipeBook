@@ -111,4 +111,15 @@ public class RecipeDBManager extends RecipeDBHelper {
 
         return getReadableDatabase().rawQuery(SELECT_QUERY, selectionArgs);
     }
+
+    public Cursor queryAllIngredients() {
+        String SELECT_QUERY = "SELECT " + DBContract.RecipeTable.COLUMN_NAME + ", "
+                + DBContract.IngredientsTable.COLUMN_INGREDIENT
+                + " FROM "
+                + DBContract.RecipeTable.TABLE_NAME + " a , "
+                + DBContract.IngredientsTable.TABLE_NAME + " b "
+                + " WHERE a."+DBContract.RecipeTable.COLUMN_RECIPE_ID + " = b."+DBContract.IngredientsTable.COLUMN_RECIPE_ID
+                + " ORDER BY "+DBContract.RecipeTable.COLUMN_NAME;
+        return getReadableDatabase().rawQuery(SELECT_QUERY, null);
+    }
 }

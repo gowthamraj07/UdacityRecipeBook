@@ -3,8 +3,10 @@ package com.asanam.udacityrecipebook.repository;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 
+import com.asanam.udacityrecipebook.domain.IngredientDomain;
 import com.asanam.udacityrecipebook.domain.Recipe;
 import com.asanam.udacityrecipebook.domain.StepDomain;
+import com.asanam.udacityrecipebook.dto.Ingredient;
 import com.asanam.udacityrecipebook.dto.RecipeDto;
 import com.asanam.udacityrecipebook.dto.RecipeListDto;
 import com.asanam.udacityrecipebook.dto.Step;
@@ -48,13 +50,9 @@ public class NetworkRecipeRepository implements RecipeRepository {
                 for (RecipeDto recipeDto : recipeListDto.getRecipeDtoList()) {
                     contentValues[index] = new Recipe(recipeDto).getContentValues();
 
-                    //receive Steps
-                    ContentValues[] stepValues = new ContentValues[recipeListDto.getRecipeDtoList().get(index).getSteps().size()];
-                    int stepIndex = 0;
-                    for(Step step : recipeListDto.getRecipeDtoList().get(index).getSteps()) {
-                        stepValues[stepIndex++] = new StepDomain(step).getContentValues(recipeDto.getId());
-                    }
-                    contentResolver.bulkInsert(RecipeProvider.STEP_URI.buildUpon().appendPath(""+recipeDto.getId()).build(), stepValues);
+                    insertRecipeStepToDB(recipeListDto, index, recipeDto);
+                    insertIngredientsToDB(recipeListDto, index, recipeDto);
+
                     index++;
                 }
 
@@ -62,5 +60,23 @@ public class NetworkRecipeRepository implements RecipeRepository {
             }
             callback.onSuccess(contentResolver.query(RecipeProvider.RECIPE_NAME_URI, null,null,null,null));
         }
+    }
+
+    private void insertRecipeStepToDB(RecipeListDto recipeListDto, int index, RecipeDto recipeDto) {
+        ContentValues[] stepValues = new ContentValues[recipeListDto.getRecipeDtoList().get(index).getSteps().size()];
+        int stepIndex = 0;
+        for(Step step : recipeListDto.getRecipeDtoList().get(index).getSteps()) {
+            stepValues[stepIndex++] = new StepDomain(step).getContentValues(recipeDto.getId());
+        }
+        contentResolver.bulkInsert(RecipeProvider.STEP_URI.buildUpon().appendPath(""+recipeDto.getId()).build(), stepValues);
+    }
+
+    private void insertIngredientsToDB(RecipeListDto recipeListDto, int index, RecipeDto recipeDto) {
+        ContentValues[] ingredients = new ContentValues[recipeListDto.getRecipeDtoList().get(index).getIngredients().size()];
+        int stepIndex = 0;
+        for(Ingredient ingredient : recipeListDto.getRecipeDtoList().get(index).getIngredients()) {
+            ingredients[stepIndex++] = new IngredientDomain(ingredient).getContentValues(recipeDto.getId());
+        }
+        contentResolver.bulkInsert(RecipeProvider.INGREDIENTS_URI.buildUpon().appendPath(""+recipeDto.getId()).build(), ingredients);
     }
 }
