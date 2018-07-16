@@ -17,12 +17,12 @@
         android:layout_toLeftOf="@id/button_next"
         android:layout_toRightOf="@id/button_previous"
         android:background="@android:color/background_light"
-        android:contentDescription="@string/appwidget_text"
         android:ellipsize="end"
         android:gravity="center_vertical|center_horizontal"
-        android:text="@string/appwidget_text"
         android:textColor="@android:color/darker_gray"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:layout_toStartOf="@id/button_next"
+        android:layout_toEndOf="@id/button_previous" />
 
     <ImageButton
         android:id="@+id/button_previous"
@@ -37,7 +37,10 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:background="@android:color/background_light"
-        android:src="@android:drawable/ic_media_previous" />
+        android:src="@android:drawable/ic_media_previous"
+        android:contentDescription="@string/previous"
+        android:layout_alignParentEnd="false"
+        android:layout_marginStart="8dp" />
 
     <ImageButton
         android:id="@+id/button_next"
@@ -50,7 +53,9 @@
         android:layout_marginTop="8dp"
         android:background="@android:color/background_light"
         android:src="@android:drawable/ic_media_next"
-        android:text="Button" />
+        android:contentDescription="@string/next"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="8dp" />
 
     <TextView
         android:id="@+id/view_border"
@@ -60,7 +65,9 @@
         android:layout_alignRight="@id/button_next"
         android:layout_below="@id/button_previous"
         android:layout_marginTop="8dp"
-        android:background="@android:color/darker_gray" />
+        android:background="@android:color/darker_gray"
+        android:layout_alignStart="@id/button_previous"
+        android:layout_alignEnd="@id/button_next" />
 
     <TextView
         android:id="@+id/lv_ingredients"
@@ -70,6 +77,8 @@
         android:layout_alignRight="@id/button_next"
         android:layout_below="@id/view_border"
         android:layout_marginTop="8dp"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        android:layout_alignStart="@id/button_previous"
+        android:layout_alignEnd="@id/button_next" />
 
 </RelativeLayout>
