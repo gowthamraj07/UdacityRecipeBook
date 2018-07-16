@@ -1,5 +1,6 @@
 package com.asanam.udacityrecipebook.fragments;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.asanam.udacityrecipebook.IngredientsActivity;
 import com.asanam.udacityrecipebook.R;
 import com.asanam.udacityrecipebook.adapter.StepsAdapter;
 import com.asanam.udacityrecipebook.dto.Step;
@@ -24,6 +26,7 @@ public class RecipeDetailsFragment extends Fragment implements DetailsView {
     private DetailsPresenter presenter;
     private RecyclerView rvSteps;
     private StepSelectionListener listener;
+    private long recipeId;
 
     @Nullable
     @Override
@@ -31,6 +34,8 @@ public class RecipeDetailsFragment extends Fragment implements DetailsView {
         View detailsView = inflater.inflate(R.layout.recipe_details_fragment_layout, container, false);
 
         rvSteps = detailsView.findViewById(R.id.rv_steps);
+        View ingredients = detailsView.findViewById(R.id.inc_ingredients);
+        ingredients.setOnClickListener(new IngredientsClickListener());
 
         if(getActivity() instanceof StepSelectionListener) {
             listener = (StepSelectionListener) getActivity();
@@ -47,8 +52,8 @@ public class RecipeDetailsFragment extends Fragment implements DetailsView {
     @Override
     public void onResume() {
         super.onResume();
-        long recipeId = getArguments().getLong("RECIPE_ID");
-        Log.i(RecipeDetailsFragment.class.getSimpleName(), "recipeId : "+recipeId);
+        recipeId = getArguments().getLong("RECIPE_ID");
+        Log.i(RecipeDetailsFragment.class.getSimpleName(), "recipeId : "+ recipeId);
         presenter.getSteps(recipeId);
     }
 
@@ -60,5 +65,14 @@ public class RecipeDetailsFragment extends Fragment implements DetailsView {
 
     public interface StepSelectionListener {
         void onSelectStep(long recipeId, long id);
+    }
+
+    private class IngredientsClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(getActivity(), IngredientsActivity.class);
+            intent.putExtra("RECIPE_ID", recipeId);
+            getContext().startActivity(intent);
+        }
     }
 }
