@@ -132,4 +132,13 @@ public class RecipeDBManager extends RecipeDBHelper {
                 ;
         return getReadableDatabase().rawQuery(SELECT_QUERY, null);
     }
+
+    public Cursor queryRecipeNameFor(long recipeId) {
+        String SELECT_QUERY = "SELECT " + DBContract.RecipeTable.COLUMN_RECIPE_ID + ", "
+                + DBContract.RecipeTable.COLUMN_NAME + " FROM "
+                + DBContract.RecipeTable.TABLE_NAME
+                + " WHERE "
+                + DBContract.RecipeTable.COLUMN_RECIPE_ID + " = " + recipeId;
+        return getReadableDatabase().rawQuery(SELECT_QUERY, null);
+    }
 }

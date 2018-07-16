@@ -27,7 +27,7 @@ public class RecipeWidget extends AppWidgetProvider {
     public static final String PREVIOUS = "PREVIOUS";
     public static final String ACTION = "com.asanam.udacityrecipebook.ACTION";
 
-    private static Long recipeId = 0l;
+    private static Long recipeId = -1l;
     private static CharSequence widgetText;
     private static boolean isAfterLast;
 
@@ -38,11 +38,20 @@ public class RecipeWidget extends AppWidgetProvider {
                          int appWidgetId) {
         Log.d(TAG, "updateAppWidget: ");
 
+        if(recipeId == -1) {
+            Cursor query = context.getContentResolver().query(RecipeProvider.RECIPE_NAME_URI, null, null, null, null);
+            if(query != null && query.getCount() > 0) {
+                query.moveToFirst();
+                recipeId = query.getLong(query.getColumnIndex(DBContract.RecipeTable.COLUMN_RECIPE_ID));
+            }
+        }
+
         if (!setWidgetValues(context, recipeId)) {
             return;
         }
 
         Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("RECIPE_ID", recipeId);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 1234, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.tv_recipe_title, pendingIntent);
 
@@ -73,10 +82,15 @@ public class RecipeWidget extends AppWidgetProvider {
 
         Cursor cursor = context.getContentResolver().query(RecipeProvider.RECIPE_NAME_URI, null, null, null, null);
 
+        if(cursor == null) {
+            return false;
+        }
+
+        //To find the recipe id from DB to display
         if (recipeId != null) {
             while (cursor.moveToNext()) {
                 long cursorRecipeId = cursor.getLong(cursor.getColumnIndex(DBContract.RecipeTable.COLUMN_RECIPE_ID));
-                if (cursorRecipeId > recipeId) {
+                if (cursorRecipeId >= recipeId) {
                     isAfterLast = false;
                     break;
                 }
@@ -93,16 +107,20 @@ public class RecipeWidget extends AppWidgetProvider {
         widgetText = context.getString(R.string.appwidget_text);
         ingredientString = "";
 
-        if (cursor != null && cursor.getCount() > 0) {
+        if (cursor.getCount() > 0) {
             long aLong = cursor.getLong(cursor.getColumnIndex(DBContract.RecipeTable.COLUMN_RECIPE_ID));
             widgetText = cursor.getString(cursor.getColumnIndex(DBContract.RecipeTable.COLUMN_NAME));
 
             Cursor ingredients = context.getContentResolver().query(RecipeProvider.INGREDIENTS_URI.buildUpon().appendPath("" + aLong).build(), null, null, null, null);
             StringBuilder builder = new StringBuilder();
-            while (ingredients.moveToNext()) {
-                String ingredientsString = ingredients.getString(ingredients.getColumnIndex(DBContract.IngredientsTable.COLUMN_INGREDIENT));
-                builder.append(ingredientsString).append("\n");
+
+            if( ingredients != null) {
+                while (ingredients.moveToNext()) {
+                    String ingredientsString = ingredients.getString(ingredients.getColumnIndex(DBContract.IngredientsTable.COLUMN_INGREDIENT));
+                    builder.append(ingredientsString).append("\n");
+                }
             }
+
             ingredientString = builder.toString();
         }
 

@@ -21,12 +21,14 @@ public class NetworkRecipeRepository implements RecipeRepository {
     private static final String RECIPE_URL = "";
     private NetworkApi api;
     private ContentResolver contentResolver;
+    private NetworkRepositoryCallback networkCallback;
     private Callback callback;
 
 
-    public NetworkRecipeRepository(NetworkApi api, ContentResolver contentResolver) {
+    public NetworkRecipeRepository(NetworkApi api, ContentResolver contentResolver, NetworkRepositoryCallback networkCallback) {
         this.api = api;
         this.contentResolver = contentResolver;
+        this.networkCallback = networkCallback;
     }
 
     @Override
@@ -59,6 +61,7 @@ public class NetworkRecipeRepository implements RecipeRepository {
                 contentResolver.bulkInsert(RecipeProvider.RECIPE_NAME_URI, contentValues);
             }
             callback.onSuccess(contentResolver.query(RecipeProvider.RECIPE_NAME_URI, null,null,null,null));
+            networkCallback.onSuccess();
         }
     }
 
@@ -78,5 +81,9 @@ public class NetworkRecipeRepository implements RecipeRepository {
             ingredients[stepIndex++] = new IngredientDomain(ingredient).getContentValues(recipeDto.getId());
         }
         contentResolver.bulkInsert(RecipeProvider.INGREDIENTS_URI.buildUpon().appendPath(""+recipeDto.getId()).build(), ingredients);
+    }
+
+    public interface NetworkRepositoryCallback {
+        void onSuccess();
     }
 }

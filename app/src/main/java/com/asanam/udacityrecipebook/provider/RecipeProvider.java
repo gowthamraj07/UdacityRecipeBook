@@ -51,6 +51,10 @@ public class RecipeProvider extends ContentProvider {
         switch (uriMatcher.match(uri)) {
             case 1:
                 return dbManager.queryAllRecipeNames();
+            case 2: {
+                long recipeId = Long.parseLong(uri.getLastPathSegment());
+                return dbManager.queryRecipeNameFor(recipeId);
+            }
             case 10:
                 return dbManager.queryAllIngredients();
             case 11: {
