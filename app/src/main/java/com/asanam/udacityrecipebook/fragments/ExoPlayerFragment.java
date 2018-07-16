@@ -29,7 +29,7 @@ import com.google.android.exoplayer2.util.Util;
 public class ExoPlayerFragment extends Fragment {
 
     public static final String TAG = "ExoPlayerFragment";
-    public static String URI_STRING = "http://techslides.com/demos/sample-videos/small.mp4";
+    public String URI_STRING = null;
     private boolean playWhenReady;
     private PlayerView playerView;
     private SimpleExoPlayer player;
@@ -68,33 +68,47 @@ public class ExoPlayerFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        if (Util.SDK_INT > 23) {
+            initializePlayer();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (getArguments() != null) {
-            URI_STRING = getArguments().getString("VIDEO_URL");
-        }
-
-        if (URI_STRING != null) {
-            initializePlayer(playerView);
+        if (Util.SDK_INT <= 23) {
+            initializePlayer();
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        releasePlayer();
+
+        if (listener != null && player != null) {
+            playbackPosition = player.getCurrentPosition();
+            currentWindow = player.getCurrentWindowIndex();
+            listener.onReleaseExoPlayer(playbackPosition, currentWindow);
+        }
+
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        releasePlayer();
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
     }
 
     private void initializePlayer(PlayerView playerView) {
+
+        if(URI_STRING == null) {
+            return;
+        }
 
         if (player == null) {
             playerView.requestFocus();
@@ -125,14 +139,13 @@ public class ExoPlayerFragment extends Fragment {
             playWhenReady = player.getPlayWhenReady();
             player.release();
             player = null;
-
-            if (listener != null) {
-                listener.onReleaseExoPlayer(playbackPosition, currentWindow);
-            }
         }
     }
 
     public void showVideo(String url) {
+
+        releasePlayer();
+
         if (!url.equals(URI_STRING)) {
             this.playbackPosition = 0;
             this.currentWindow = 0;
@@ -152,11 +165,25 @@ public class ExoPlayerFragment extends Fragment {
     }
 
     public void seekTo(long playbackPosition, int currentWindow) {
+        Log.d(TAG, "seekTo: ["+playbackPosition+","+currentWindow+"]");
         this.playbackPosition = playbackPosition;
         this.currentWindow = currentWindow;
+        if(player != null) {
+            player.seekTo(currentWindow, playbackPosition);
+        }
     }
 
     public interface ExoPlayerListener {
         void onReleaseExoPlayer(long playbackPosition, int currentWindow);
+    }
+
+    private void initializePlayer() {
+        if (getArguments() != null) {
+            URI_STRING = getArguments().getString("VIDEO_URL");
+        }
+
+        if (URI_STRING != null) {
+            initializePlayer(playerView);
+        }
     }
 }

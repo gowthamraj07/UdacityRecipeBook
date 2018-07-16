@@ -4,6 +4,7 @@ import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.asanam.udacityrecipebook.fragments.ExoPlayerFragment;
 import com.asanam.udacityrecipebook.fragments.StepDetailsFragment;
@@ -14,6 +15,7 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
     public static final String CURRENT_WINDOW = "currentWindow";
     public static final String RECIPE_ID = "RECIPE_ID";
     public static final String STEP_ID = "STEP_ID";
+    public static final String TAG = "StepDetailsActivity";
     private Fragment stepDetailsFragment;
     private int currentWindow = 0;
     private long playbackPosition = 0;
@@ -37,7 +39,7 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
     @Override
     protected void onResume() {
         super.onResume();
-
+        Log.d(TAG, "onResume: ");
         ((StepDetailsFragment) stepDetailsFragment).showStepDetailsScreen(recipeId, stepId);
 
         Fragment exoPlayer = stepDetailsFragment.getChildFragmentManager().findFragmentById(R.id.frag_exo_player);
@@ -48,12 +50,15 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
 
     @Override
     public void onReleaseExoPlayer(long playbackPosition, int currentWindow) {
+        Log.d(TAG, "onReleaseExoPlayer: Exoplayer [" + playbackPosition + "," + currentWindow + "]");
         this.playbackPosition = playbackPosition;
         this.currentWindow = currentWindow;
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState: ");
+        Log.d(TAG, "onSaveInstanceState: Exoplayer [" + playbackPosition + "," + currentWindow + "]");
         outState.putLong(PLAYBACK_POSITION, playbackPosition);
         outState.putInt(CURRENT_WINDOW, currentWindow);
         outState.putLong(RECIPE_ID, recipeId);
@@ -63,14 +68,16 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        if(savedInstanceState != null) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "onRestoreInstanceState: ");
+        if (savedInstanceState != null) {
             playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION);
             currentWindow = savedInstanceState.getInt(CURRENT_WINDOW);
             recipeId = savedInstanceState.getLong(RECIPE_ID);
             stepId = savedInstanceState.getLong(STEP_ID);
+            Log.d(TAG, "onRestoreInstanceState: Exoplayer [" + playbackPosition + "," + currentWindow + "]");
         }
 
-        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
