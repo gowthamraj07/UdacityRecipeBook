@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.asanam.udacityrecipebook.db.DBContract;
 import com.asanam.udacityrecipebook.provider.RecipeProvider;
+import com.asanam.udacityrecipebook.utils.Constants;
 
 public class IngredientsActivity extends AppCompatActivity {
 
@@ -22,7 +23,17 @@ public class IngredientsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ingredients);
 
         RecyclerView rvIngredients = findViewById(R.id.rv_ingredients_list);
-        Long recipeId = getIntent().getLongExtra("RECIPE_ID", 0l);
+        Long recipeId = getIntent().getLongExtra(Constants.RECIPE_ID, 0l);
+
+        Cursor query = getContentResolver().query(RecipeProvider.RECIPE_NAME_URI.buildUpon().appendPath(recipeId.toString()).build(),
+                null, null, null, null);
+        if(query != null && query.getCount() > 0) {
+            query.moveToFirst();
+            String recipeName = query.getString(query.getColumnIndex(DBContract.RecipeTable.COLUMN_NAME));
+
+            setTitle(recipeName + " - " + getString(R.string.ingredients));
+        }
+
         rvIngredients.setAdapter(new IngredientsAdapter(recipeId));
     }
 
