@@ -89,8 +89,7 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
 
         Log.d(StepDetailsFragment.class.getSimpleName(), "VIDEO_URL : "+url);
 
-        Guideline guideLine = detailsFragmentView.findViewById(R.id.guideline2);
-        guideLine.setGuidelinePercent(0.4f);
+        showGuideLine();
 
         if(exoPlayerFragment != null) {
             ((ExoPlayerFragment) exoPlayerFragment).showVideo(url);
@@ -105,16 +104,19 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
         ivThumbnail.setVisibility(View.VISIBLE);
         Picasso.get().load(Uri.parse(imageUrl)).into(ivThumbnail);
 
+        showGuideLine();
+    }
+
+    private void showGuideLine() {
         Guideline guideLine = detailsFragmentView.findViewById(R.id.guideline2);
-        guideLine.setGuidelinePercent(0.4f);
+        if(guideLine != null) {
+            guideLine.setGuidelinePercent(0.4f);
+        }
     }
 
     @Override
     public void hideImage() {
         ivThumbnail.setVisibility(View.GONE);
-
-        Guideline guideLine = detailsFragmentView.findViewById(R.id.guideline2);
-        guideLine.setGuidelinePercent(0);
     }
 
     @Override
@@ -123,9 +125,6 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
             exoPlayerFragment.getView().setVisibility(View.GONE);
             ((ExoPlayerFragment) exoPlayerFragment).releasePlayer();
         }
-
-        Guideline guideLine = detailsFragmentView.findViewById(R.id.guideline2);
-        guideLine.setGuidelinePercent(0);
     }
 
     @Override
@@ -161,6 +160,14 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
 
         btnNext = detailsFragmentView.findViewById(R.id.btn_next);
         btnNext.setOnClickListener(new NextButtonListener());
+    }
+
+    @Override
+    public void hideImageAndVideo() {
+        Guideline guideLine = detailsFragmentView.findViewById(R.id.guideline2);
+        if(guideLine != null) {
+            guideLine.setGuidelinePercent(0);
+        }
     }
 
     @Override

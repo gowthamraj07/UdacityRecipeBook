@@ -18,4 +18,6 @@ public interface StepDetailsView {
     void hideNext();
 
     void reset();
+
+    void hideImageAndVideo();
 }

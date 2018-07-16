@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +25,10 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+
 public class ExoPlayerFragment extends Fragment {
 
+    public static final String TAG = "ExoPlayerFragment";
     public static String URI_STRING = "http://techslides.com/demos/sample-videos/small.mp4";
     private boolean playWhenReady;
     private PlayerView playerView;
@@ -136,6 +139,8 @@ public class ExoPlayerFragment extends Fragment {
         }
 
         URI_STRING = url;
+
+        Log.d(TAG, "showVideo: URL : "+URI_STRING);
 
         if (URI_STRING != null) {
             try {

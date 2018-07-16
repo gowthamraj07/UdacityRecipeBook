@@ -58,8 +58,7 @@ public class StepDetailsPresenter {
             return;
         }
 
-        view.hideImage();
-        view.hideVideo();
+        view.hideImageAndVideo();
 
         if(description != null && !description.isEmpty()) {
             view.showDescription(description);
