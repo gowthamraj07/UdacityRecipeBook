@@ -12,9 +12,7 @@ import android.widget.RemoteViews;
 
 import com.asanam.udacityrecipebook.db.DBContract;
 import com.asanam.udacityrecipebook.provider.RecipeProvider;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.asanam.udacityrecipebook.utils.Constants;
 
 /**
  * Implementation of App Widget functionality.
@@ -27,12 +25,10 @@ public class RecipeWidget extends AppWidgetProvider {
     public static final String PREVIOUS = "PREVIOUS";
     public static final String ACTION = "com.asanam.udacityrecipebook.ACTION";
 
-    private static Long recipeId = -1l;
-    private static CharSequence widgetText;
+    private static Long recipeId = -1L;
     private static boolean isAfterLast;
 
     private RemoteViews views;
-    private String ingredientString;
 
     void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                          int appWidgetId) {
@@ -43,6 +39,7 @@ public class RecipeWidget extends AppWidgetProvider {
             if(query != null && query.getCount() > 0) {
                 query.moveToFirst();
                 recipeId = query.getLong(query.getColumnIndex(DBContract.RecipeTable.COLUMN_RECIPE_ID));
+                query.close();
             }
         }
 
@@ -51,7 +48,7 @@ public class RecipeWidget extends AppWidgetProvider {
         }
 
         Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra("RECIPE_ID", recipeId);
+        intent.putExtra(Constants.RECIPE_ID, recipeId);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 1234, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.tv_recipe_title, pendingIntent);
 
@@ -104,8 +101,8 @@ public class RecipeWidget extends AppWidgetProvider {
             return false;
         }
 
-        widgetText = context.getString(R.string.appwidget_text);
-        ingredientString = "";
+        CharSequence widgetText = context.getString(R.string.appwidget_text);
+        String ingredientString = "";
 
         if (cursor.getCount() > 0) {
             long aLong = cursor.getLong(cursor.getColumnIndex(DBContract.RecipeTable.COLUMN_RECIPE_ID));
@@ -119,8 +116,10 @@ public class RecipeWidget extends AppWidgetProvider {
                     String ingredientsString = ingredients.getString(ingredients.getColumnIndex(DBContract.IngredientsTable.COLUMN_INGREDIENT));
                     builder.append(ingredientsString).append("\n");
                 }
+                ingredients.close();
             }
 
+            cursor.close();
             ingredientString = builder.toString();
         }
 
