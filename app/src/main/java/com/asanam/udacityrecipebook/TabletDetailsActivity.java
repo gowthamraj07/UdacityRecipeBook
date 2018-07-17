@@ -1,5 +1,6 @@
 package com.asanam.udacityrecipebook;
 
+import android.content.pm.ActivityInfo;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ public class TabletDetailsActivity extends AppCompatActivity implements RecipeDe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_tablet_details);
 
         recipeId = getIntent().getLongExtra(Constants.RECIPE_ID, -1);
