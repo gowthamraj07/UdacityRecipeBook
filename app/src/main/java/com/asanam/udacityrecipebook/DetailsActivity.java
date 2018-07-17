@@ -11,6 +11,7 @@ import com.asanam.udacityrecipebook.db.DBContract;
 import com.asanam.udacityrecipebook.fragments.RecipeDetailsFragment;
 import com.asanam.udacityrecipebook.fragments.StepDetailsFragment;
 import com.asanam.udacityrecipebook.provider.RecipeProvider;
+import com.asanam.udacityrecipebook.utils.Constants;
 
 public class DetailsActivity extends AppCompatActivity implements RecipeDetailsFragment.StepSelectionListener {
 
@@ -19,7 +20,7 @@ public class DetailsActivity extends AppCompatActivity implements RecipeDetailsF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        long recipeId = getIntent().getLongExtra("RECIPE_ID", -1);
+        long recipeId = getIntent().getLongExtra(Constants.RECIPE_ID, -1);
         Log.i(DetailsActivity.class.getSimpleName(), "recipeId : "+recipeId);
 
         Cursor query = getContentResolver().query(RecipeProvider.RECIPE_NAME_URI.buildUpon().appendPath("" + recipeId).build(),
@@ -31,7 +32,7 @@ public class DetailsActivity extends AppCompatActivity implements RecipeDetailsF
 
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.frag_details);
         Bundle bundle = new Bundle();
-        bundle.putLong("RECIPE_ID", recipeId);
+        bundle.putLong(Constants.RECIPE_ID, recipeId);
         fragment.setArguments(bundle);
     }
 
@@ -39,9 +40,9 @@ public class DetailsActivity extends AppCompatActivity implements RecipeDetailsF
     public void onSelectStep(long recipeId, long id) {
         Intent intent = new Intent(this, StepDetailsActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putLong("RECIPE_ID", recipeId);
-        bundle.putLong("STEP_ID", id);
-        intent.putExtra("STEP_DETAILS", bundle);
+        bundle.putLong(Constants.RECIPE_ID, recipeId);
+        bundle.putLong(Constants.STEP_ID, id);
+        intent.putExtra(Constants.STEP_DETAILS, bundle);
         startActivity(intent);
     }
 }
