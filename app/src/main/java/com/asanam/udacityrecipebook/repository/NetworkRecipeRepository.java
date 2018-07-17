@@ -12,13 +12,13 @@ import com.asanam.udacityrecipebook.dto.RecipeListDto;
 import com.asanam.udacityrecipebook.dto.Step;
 import com.asanam.udacityrecipebook.network.NetworkApi;
 import com.asanam.udacityrecipebook.provider.RecipeProvider;
+import com.asanam.udacityrecipebook.utils.Constants;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.List;
 
 public class NetworkRecipeRepository implements RecipeRepository {
-    private static final String RECIPE_URL = "";
     private NetworkApi api;
     private ContentResolver contentResolver;
     private NetworkRepositoryCallback networkCallback;
@@ -35,7 +35,7 @@ public class NetworkRecipeRepository implements RecipeRepository {
     public void getRecipes(Callback callback) {
         this.callback = callback;
         NetworkApi.Callback apiCallback = new NetworkCallback();
-        api.get("https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json", apiCallback);
+        api.get(Constants.RECIPE_URL, apiCallback);
     }
 
     private class NetworkCallback implements NetworkApi.Callback {

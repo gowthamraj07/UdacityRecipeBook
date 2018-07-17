@@ -4,6 +4,7 @@ import android.database.Cursor;
 
 import com.asanam.udacityrecipebook.db.DBContract;
 import com.asanam.udacityrecipebook.repository.DBRepository;
+import com.asanam.udacityrecipebook.utils.Constants;
 import com.asanam.udacityrecipebook.view.StepDetailsView;
 
 public class StepDetailsPresenter {
@@ -50,7 +51,7 @@ public class StepDetailsPresenter {
 
 
         if(thumbnailUrl != null && !thumbnailUrl.isEmpty()) {
-            if(thumbnailUrl.endsWith(".mp4")) {
+            if(thumbnailUrl.endsWith(Constants.MP4)) {
                 showVideo(thumbnailUrl, description);
             } else {
                 showImage(description, thumbnailUrl);
