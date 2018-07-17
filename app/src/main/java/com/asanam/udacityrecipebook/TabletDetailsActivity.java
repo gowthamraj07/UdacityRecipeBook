@@ -7,13 +7,11 @@ import android.os.Bundle;
 import com.asanam.udacityrecipebook.fragments.ExoPlayerFragment;
 import com.asanam.udacityrecipebook.fragments.RecipeDetailsFragment;
 import com.asanam.udacityrecipebook.fragments.StepDetailsFragment;
+import com.asanam.udacityrecipebook.utils.Constants;
 
 public class TabletDetailsActivity extends AppCompatActivity implements RecipeDetailsFragment.StepSelectionListener, StepDetailsFragment.StepDetailListener, ExoPlayerFragment.ExoPlayerListener {
 
     private long recipeId;
-    private long stepId;
-    private long playbackPosition;
-    private int currentWindow;
     private Fragment exoPlayer;
     private Fragment stepDetailsFragment;
 
@@ -22,12 +20,12 @@ public class TabletDetailsActivity extends AppCompatActivity implements RecipeDe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tablet_details);
 
-        recipeId = getIntent().getLongExtra("RECIPE_ID", -1);
+        recipeId = getIntent().getLongExtra(Constants.RECIPE_ID, -1);
 
         Fragment detailsFragment = getSupportFragmentManager().findFragmentById(R.id.frag_details);
 
         Bundle bundle = new Bundle();
-        bundle.putLong("RECIPE_ID", recipeId);
+        bundle.putLong(Constants.RECIPE_ID, recipeId);
         detailsFragment.setArguments(bundle);
     }
 
@@ -53,12 +51,9 @@ public class TabletDetailsActivity extends AppCompatActivity implements RecipeDe
     @Override
     public void onSaveStepDetails(long recipeId, long stepId) {
         this.recipeId = recipeId;
-        this.stepId = stepId;
     }
 
     @Override
     public void onReleaseExoPlayer(long playbackPosition, int currentWindow) {
-        this.playbackPosition = playbackPosition;
-        this.currentWindow = currentWindow;
     }
 }

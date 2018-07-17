@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class RecipeBookFlowTest {
+public class RecipeBookFlowInTabletTest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
@@ -46,13 +46,24 @@ public class RecipeBookFlowTest {
     }
 
     @Test
-    public void recipeBookFlowTest() {
+    public void recipeBookFlowInTabletTest() {
         ViewInteraction recyclerView = onView(
                 allOf(withId(R.id.rv_recipe_card),
                         childAtPosition(
                                 withClassName(is("android.support.constraint.ConstraintLayout")),
                                 0)));
         recyclerView.perform(actionOnItemAtPosition(0, click()));
+
+        ViewInteraction constraintLayout = onView(
+                allOf(withId(R.id.inc_ingredients),
+                        childAtPosition(
+                                allOf(withId(R.id.frag_details),
+                                        childAtPosition(
+                                                withClassName(is("android.support.constraint.ConstraintLayout")),
+                                                1)),
+                                0),
+                        isDisplayed()));
+        constraintLayout.perform(click());
 
         ViewInteraction appCompatImageButton = onView(
                 allOf(withContentDescription("Navigate up"),
@@ -64,53 +75,6 @@ public class RecipeBookFlowTest {
                                 1),
                         isDisplayed()));
         appCompatImageButton.perform(click());
-
-        ViewInteraction recyclerView3 = onView(
-                allOf(withId(R.id.rv_recipe_card),
-                        childAtPosition(
-                                withClassName(is("android.support.constraint.ConstraintLayout")),
-                                0)));
-        recyclerView3.perform(actionOnItemAtPosition(1, click()));
-
-        ViewInteraction constraintLayout = onView(
-                allOf(withId(R.id.inc_ingredients),
-                        childAtPosition(
-                                allOf(withId(R.id.frag_details),
-                                        childAtPosition(
-                                                withClassName(is("android.support.constraint.ConstraintLayout")),
-                                                0)),
-                                0),
-                        isDisplayed()));
-        constraintLayout.perform(click());
-
-        ViewInteraction appCompatImageButton2 = onView(
-                allOf(withContentDescription("Navigate up"),
-                        childAtPosition(
-                                allOf(withId(R.id.action_bar),
-                                        childAtPosition(
-                                                withId(R.id.action_bar_container),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton2.perform(click());
-
-        ViewInteraction appCompatImageButton3 = onView(
-                allOf(withContentDescription("Navigate up"),
-                        childAtPosition(
-                                allOf(withId(R.id.action_bar),
-                                        childAtPosition(
-                                                withId(R.id.action_bar_container),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton3.perform(click());
-
-        ViewInteraction recyclerView4 = onView(
-                allOf(withId(R.id.rv_recipe_card),
-                        childAtPosition(
-                                withClassName(is("android.support.constraint.ConstraintLayout")),
-                                0)));
-        recyclerView4.perform(actionOnItemAtPosition(2, click()));
 
         ViewInteraction appCompatTextView = onView(
                 allOf(withId(R.id.tv_details), withText("Recipe Introduction"),
@@ -126,7 +90,26 @@ public class RecipeBookFlowTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(4940);
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ViewInteraction appCompatTextView2 = onView(
+                allOf(withId(R.id.tv_details), withText("Recipe Introduction"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.rv_steps),
+                                        0),
+                                0),
+                        isDisplayed()));
+        appCompatTextView2.perform(click());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -137,19 +120,19 @@ public class RecipeBookFlowTest {
                                 allOf(withId(R.id.frag_step_details_fragment),
                                         childAtPosition(
                                                 withClassName(is("android.support.constraint.ConstraintLayout")),
-                                                0)),
+                                                2)),
                                 6),
                         isDisplayed()));
         appCompatButton.perform(click());
 
         ViewInteraction appCompatButton2 = onView(
-                allOf(withId(R.id.btn_previous), withText("Previous"),
+                allOf(withId(R.id.btn_next), withText("Next"),
                         childAtPosition(
                                 allOf(withId(R.id.frag_step_details_fragment),
                                         childAtPosition(
                                                 withClassName(is("android.support.constraint.ConstraintLayout")),
-                                                0)),
-                                5),
+                                                2)),
+                                6),
                         isDisplayed()));
         appCompatButton2.perform(click());
 
@@ -162,7 +145,7 @@ public class RecipeBookFlowTest {
             e.printStackTrace();
         }
 
-        ViewInteraction appCompatImageButton4 = onView(
+        ViewInteraction appCompatImageButton2 = onView(
                 allOf(withContentDescription("Navigate up"),
                         childAtPosition(
                                 allOf(withId(R.id.action_bar),
@@ -171,7 +154,24 @@ public class RecipeBookFlowTest {
                                                 0)),
                                 1),
                         isDisplayed()));
-        appCompatImageButton4.perform(click());
+        appCompatImageButton2.perform(click());
+
+        ViewInteraction recyclerView2 = onView(
+                allOf(withId(R.id.rv_recipe_card),
+                        childAtPosition(
+                                withClassName(is("android.support.constraint.ConstraintLayout")),
+                                0)));
+        recyclerView2.perform(actionOnItemAtPosition(1, click()));
+
+        ViewInteraction appCompatTextView3 = onView(
+                allOf(withId(R.id.tv_details), withText("Starting prep"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.rv_steps),
+                                        1),
+                                0),
+                        isDisplayed()));
+        appCompatTextView3.perform(click());
 
     }
 
