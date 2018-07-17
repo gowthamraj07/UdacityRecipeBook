@@ -3,6 +3,8 @@ package com.asanam.udacityrecipebook.network;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.asanam.udacityrecipebook.utils.Constants;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -11,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class HttpNetworkApi implements NetworkApi {
+
     @Override
     public void get(String url, final Callback apiCallback) {
 
@@ -22,7 +25,7 @@ public class HttpNetworkApi implements NetworkApi {
                 try {
                     URL url = new URL(downloadUrl[0]);//Create Download URl
                     HttpURLConnection c = (HttpURLConnection) url.openConnection();//Open Url Connection
-                    c.setRequestMethod("GET");//Set Request Method to "GET" since we are grtting data
+                    c.setRequestMethod(Constants.REQUEST_METHOD);//Set Request Method to "GET" since we are grtting data
                     c.connect();//connect the URL Connection
 
                     //If Connection response is not OK then show Logs
