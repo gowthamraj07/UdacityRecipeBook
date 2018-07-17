@@ -2,6 +2,7 @@ package com.asanam.udacityrecipebook;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -23,7 +24,7 @@ public class IngredientsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ingredients);
 
         RecyclerView rvIngredients = findViewById(R.id.rv_ingredients_list);
-        Long recipeId = getIntent().getLongExtra(Constants.RECIPE_ID, 0l);
+        Long recipeId = getIntent().getLongExtra(Constants.RECIPE_ID, 0);
 
         Cursor query = getContentResolver().query(RecipeProvider.RECIPE_NAME_URI.buildUpon().appendPath(recipeId.toString()).build(),
                 null, null, null, null);
@@ -32,6 +33,7 @@ public class IngredientsActivity extends AppCompatActivity {
             String recipeName = query.getString(query.getColumnIndex(DBContract.RecipeTable.COLUMN_NAME));
 
             setTitle(recipeName + " - " + getString(R.string.ingredients));
+            query.close();
         }
 
         rvIngredients.setAdapter(new IngredientsAdapter(recipeId));
@@ -40,7 +42,10 @@ public class IngredientsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar supportActionBar = getSupportActionBar();
+        if(supportActionBar != null) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
@@ -58,7 +63,7 @@ public class IngredientsActivity extends AppCompatActivity {
 
         private final Cursor query;
 
-        public IngredientsAdapter(Long recipeId) {
+        IngredientsAdapter(Long recipeId) {
             query = getContentResolver().query(RecipeProvider.INGREDIENTS_URI.buildUpon().appendPath(recipeId.toString()).build(),
                     null, null, null, null);
         }
@@ -85,9 +90,9 @@ public class IngredientsActivity extends AppCompatActivity {
     private class IngredientsViewHolder extends RecyclerView.ViewHolder {
         private TextView itemView;
 
-        public IngredientsViewHolder(View itemView) {
+        IngredientsViewHolder(View itemView) {
             super(itemView);
-            this.itemView = (TextView) itemView.findViewById(R.id.tv_ingredient_item);
+            this.itemView = itemView.findViewById(R.id.tv_ingredient_item);
         }
 
         public void bind(Cursor query) {
