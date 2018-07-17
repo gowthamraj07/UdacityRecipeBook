@@ -14,6 +14,7 @@ import com.asanam.udacityrecipebook.MainActivity;
 import com.asanam.udacityrecipebook.R;
 import com.asanam.udacityrecipebook.TabletDetailsActivity;
 import com.asanam.udacityrecipebook.db.DBContract;
+import com.asanam.udacityrecipebook.utils.Constants;
 
 public class RecipeViewHolder extends RecyclerView.ViewHolder {
     private View itemView;
@@ -48,7 +49,7 @@ public class RecipeViewHolder extends RecyclerView.ViewHolder {
             } else {
                 intent = new Intent(context, DetailsActivity.class);
             }
-            intent.putExtra("RECIPE_ID", aLong);
+            intent.putExtra(Constants.RECIPE_ID, aLong);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             context.startActivity(intent);
