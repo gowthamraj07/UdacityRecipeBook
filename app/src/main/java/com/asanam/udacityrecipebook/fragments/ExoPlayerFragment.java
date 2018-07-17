@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.asanam.udacityrecipebook.R;
+import com.asanam.udacityrecipebook.utils.Constants;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -28,12 +29,11 @@ import com.google.android.exoplayer2.util.Util;
 
 public class ExoPlayerFragment extends Fragment {
 
-    public static final String TAG = "ExoPlayerFragment";
+    public static final String TAG = ExoPlayerFragment.class.getSimpleName();
     public String URI_STRING = null;
     private boolean playWhenReady;
     private PlayerView playerView;
     private SimpleExoPlayer player;
-    private DefaultBandwidthMeter bandwidthMeter;
 
     private long playbackPosition;
     private int currentWindow;
@@ -58,8 +58,8 @@ public class ExoPlayerFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (!(getActivity() instanceof ExoPlayerListener)) {
-            throw new ClassCastException(getActivity().toString() + "Should implement ExoPlayerListener");
+        if (getActivity() != null && !(getActivity() instanceof ExoPlayerListener)) {
+            throw new ClassCastException(getActivity().toString() + getString(R.string.should_implement_exo_player_listener));
         }
 
         listener = (ExoPlayerListener) getActivity();
@@ -106,20 +106,20 @@ public class ExoPlayerFragment extends Fragment {
 
     private void initializePlayer(PlayerView playerView) {
 
-        if(URI_STRING == null) {
+        if (URI_STRING == null) {
             return;
         }
 
         if (player == null) {
             playerView.requestFocus();
 
-            bandwidthMeter = new DefaultBandwidthMeter();
+            DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
             DefaultTrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
             player = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector);
 
             Uri videoUri = Uri.parse(URI_STRING);
 
-            DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("ExoPlayerExample");
+            DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory(TAG);
             ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
             mediaSource = new ExtractorMediaSource(videoUri, dataSourceFactory, extractorsFactory, null, null);
 
@@ -153,7 +153,7 @@ public class ExoPlayerFragment extends Fragment {
 
         URI_STRING = url;
 
-        Log.d(TAG, "showVideo: URL : "+URI_STRING);
+        Log.d(TAG, "showVideo: URL : " + URI_STRING);
 
         if (URI_STRING != null) {
             try {
@@ -165,10 +165,10 @@ public class ExoPlayerFragment extends Fragment {
     }
 
     public void seekTo(long playbackPosition, int currentWindow) {
-        Log.d(TAG, "seekTo: ["+playbackPosition+","+currentWindow+"]");
+        Log.d(TAG, "seekTo: [" + playbackPosition + "," + currentWindow + "]");
         this.playbackPosition = playbackPosition;
         this.currentWindow = currentWindow;
-        if(player != null) {
+        if (player != null) {
             player.seekTo(currentWindow, playbackPosition);
         }
     }
@@ -179,7 +179,7 @@ public class ExoPlayerFragment extends Fragment {
 
     private void initializePlayer() {
         if (getArguments() != null) {
-            URI_STRING = getArguments().getString("VIDEO_URL");
+            URI_STRING = getArguments().getString(Constants.VIDEO_URL);
         }
 
         if (URI_STRING != null) {
