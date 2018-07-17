@@ -2,6 +2,7 @@ package com.asanam.udacityrecipebook;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,6 +19,8 @@ import com.asanam.udacityrecipebook.view.AndroidRecipeCardsView;
 import com.asanam.udacityrecipebook.view.RecipeCardsView;
 
 public class MainActivity extends AppCompatActivity {
+
+    CountingIdlingResource countingIdlingResource = new CountingIdlingResource("DOWNLOAD");
 
     public static final String TAG = "MainActivity";
     private RecipeCardsPresenter presenter;
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         RecipeRepository repository = new NetworkRecipeRepository(api, getContentResolver(), new NetworkListener());
         presenter = new RecipeCardsPresenter(view, repository);
 
+        countingIdlingResource.increment();
         presenter.showCards();
     }
 
@@ -59,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    public CountingIdlingResource getEspressoIdlingResourceForMainActivity() {
+        return countingIdlingResource;
+    }
+
     private class NetworkListener implements NetworkRecipeRepository.NetworkRepositoryCallback {
         @Override
         public void onSuccess() {
@@ -69,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
                     showRecipeActivity(recipeId);
                 }
             }
+            countingIdlingResource.decrement();
         }
     }
 }
