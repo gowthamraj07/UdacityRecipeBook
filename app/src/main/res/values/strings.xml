@@ -9,4 +9,5 @@
     <string name="recipe_ingredients">Recipe Ingredients</string>
     <string name="ingredients">Ingredients</string>
     <string name="should_implement_exo_player_listener">Should implement ExoPlayerListener</string>
+    <string name="must_implement_step_selection_listener">must implement StepSelectionListener</string>
 </resources>

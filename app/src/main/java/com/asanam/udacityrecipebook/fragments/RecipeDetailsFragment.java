@@ -19,6 +19,7 @@ import com.asanam.udacityrecipebook.dto.Step;
 import com.asanam.udacityrecipebook.presenter.DetailsPresenter;
 import com.asanam.udacityrecipebook.repository.DBRepository;
 import com.asanam.udacityrecipebook.repository.RecipeDBRepository;
+import com.asanam.udacityrecipebook.utils.Constants;
 import com.asanam.udacityrecipebook.view.DetailsView;
 
 public class RecipeDetailsFragment extends Fragment implements DetailsView {
@@ -41,7 +42,7 @@ public class RecipeDetailsFragment extends Fragment implements DetailsView {
             listener = (StepSelectionListener) getActivity();
         } else {
             throw new ClassCastException(getActivity().toString()
-                    + " must implement StepSelectionListener");
+                    + getString(R.string.must_implement_step_selection_listener));
         }
 
         DBRepository repository = new RecipeDBRepository(getContext());
@@ -52,7 +53,7 @@ public class RecipeDetailsFragment extends Fragment implements DetailsView {
     @Override
     public void onResume() {
         super.onResume();
-        recipeId = getArguments().getLong("RECIPE_ID");
+        recipeId = getArguments().getLong(Constants.RECIPE_ID);
         Log.i(RecipeDetailsFragment.class.getSimpleName(), "recipeId : "+ recipeId);
         presenter.getSteps(recipeId);
     }
@@ -71,7 +72,7 @@ public class RecipeDetailsFragment extends Fragment implements DetailsView {
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(getActivity(), IngredientsActivity.class);
-            intent.putExtra("RECIPE_ID", recipeId);
+            intent.putExtra(Constants.RECIPE_ID, recipeId);
             getContext().startActivity(intent);
         }
     }
