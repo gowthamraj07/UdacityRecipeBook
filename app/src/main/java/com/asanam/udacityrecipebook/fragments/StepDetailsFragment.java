@@ -20,6 +20,7 @@ import com.asanam.udacityrecipebook.dto.Step;
 import com.asanam.udacityrecipebook.presenter.StepDetailsPresenter;
 import com.asanam.udacityrecipebook.repository.DBRepository;
 import com.asanam.udacityrecipebook.repository.RecipeDBRepository;
+import com.asanam.udacityrecipebook.utils.Constants;
 import com.asanam.udacityrecipebook.view.StepDetailsView;
 import com.squareup.picasso.Picasso;
 
@@ -85,7 +86,7 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
     @Override
     public void showVideo(String url, String description) {
         bundle = new Bundle();
-        bundle.putString("VIDEO_URL", url);
+        bundle.putString(Constants.VIDEO_URL, url);
 
         Log.d(StepDetailsFragment.class.getSimpleName(), "VIDEO_URL : "+url);
 
