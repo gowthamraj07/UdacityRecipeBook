@@ -8,4 +8,6 @@ public class Constants {
     public static final String RECIPE_URL = "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json";
     public static final String STEP_ID = "STEP_ID";
     public static final String STEP_DETAILS = "STEP_DETAILS";
+    public static final String PLAYBACK_POSITION = "playbackPosition";
+    public static final String CURRENT_WINDOW = "currentWindow";
 }
