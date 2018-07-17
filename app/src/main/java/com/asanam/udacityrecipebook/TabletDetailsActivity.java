@@ -4,6 +4,7 @@ import android.content.pm.ActivityInfo;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import com.asanam.udacityrecipebook.fragments.ExoPlayerFragment;
 import com.asanam.udacityrecipebook.fragments.RecipeDetailsFragment;
@@ -25,6 +26,8 @@ public class TabletDetailsActivity extends AppCompatActivity implements RecipeDe
         recipeId = getIntent().getLongExtra(Constants.RECIPE_ID, -1);
 
         Fragment detailsFragment = getSupportFragmentManager().findFragmentById(R.id.frag_details);
+        stepDetailsFragment = getSupportFragmentManager().findFragmentById(R.id.frag_step_details_fragment);
+        stepDetailsFragment.getView().setVisibility(View.GONE);
 
         Bundle bundle = new Bundle();
         bundle.putLong(Constants.RECIPE_ID, recipeId);
@@ -43,6 +46,7 @@ public class TabletDetailsActivity extends AppCompatActivity implements RecipeDe
             exoPlayer = stepDetailsFragment.getChildFragmentManager().findFragmentById(R.id.frag_exo_player);
         }
 
+        stepDetailsFragment.getView().setVisibility(View.VISIBLE);
         if (exoPlayer != null) {
             ((ExoPlayerFragment) exoPlayer).releasePlayer();
         }
