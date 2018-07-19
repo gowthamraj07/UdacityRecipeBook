@@ -27,7 +27,7 @@ public class RecipeWidget extends AppWidgetProvider {
     public static final String ACTION = "com.asanam.udacityrecipebook.ACTION";
 
     public static Long recipeId = -1L;
-    private static boolean isAfterLast;
+    private static long lastRecipeId;
 
     private RemoteViews views;
 
@@ -40,6 +40,8 @@ public class RecipeWidget extends AppWidgetProvider {
             if(query != null && query.getCount() > 0) {
                 query.moveToFirst();
                 recipeId = query.getLong(query.getColumnIndex(DBContract.RecipeTable.COLUMN_RECIPE_ID));
+                query.moveToLast();
+                lastRecipeId = query.getLong(query.getColumnIndex(DBContract.RecipeTable.COLUMN_RECIPE_ID));
                 query.close();
             }
         }
@@ -47,8 +49,6 @@ public class RecipeWidget extends AppWidgetProvider {
         if (!setWidgetValues(context, recipeId, appWidgetId)) {
             return;
         }
-
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.lv_ingredients);
 
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra(Constants.RECIPE_ID, recipeId);
@@ -88,19 +88,22 @@ public class RecipeWidget extends AppWidgetProvider {
 
         //To find the recipe id from DB to display
         if (recipeId != null) {
-            while (cursor.moveToNext()) {
+
+            cursor.moveToLast();
+            lastRecipeId = cursor.getLong(cursor.getColumnIndex(DBContract.RecipeTable.COLUMN_RECIPE_ID));
+            cursor.moveToFirst();
+
+            do {
                 long cursorRecipeId = cursor.getLong(cursor.getColumnIndex(DBContract.RecipeTable.COLUMN_RECIPE_ID));
                 if (cursorRecipeId >= recipeId) {
-                    isAfterLast = false;
                     break;
                 }
-            }
+            } while (cursor.moveToNext());
         } else {
             cursor.moveToFirst();
         }
 
         if (cursor.isAfterLast()) {
-            isAfterLast = true;
             return false;
         }
 
@@ -144,6 +147,7 @@ public class RecipeWidget extends AppWidgetProvider {
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.lv_ingredients);
         }
     }
 
@@ -164,6 +168,7 @@ public class RecipeWidget extends AppWidgetProvider {
 
         String stringExtra = intent.getStringExtra(RECIPE_ACTION);
         Log.d(TAG, "onReceive: recipeId : " + recipeId);
+        Log.d(TAG, "onReceive: lastRecipeId : " + lastRecipeId);
         Log.d(TAG, "onReceive: stringExtra : " + stringExtra);
 
         if (stringExtra == null) {
@@ -171,11 +176,7 @@ public class RecipeWidget extends AppWidgetProvider {
         }
 
         if (NEXT.equals(stringExtra)) {
-            if(isAfterLast) {
-                --recipeId; //Setting to previous position
-            } else {
-                ++recipeId;
-            }
+            recipeId = recipeId == lastRecipeId ? lastRecipeId : ++recipeId;
         } else {
             recipeId = recipeId == 1 ? 1 : --recipeId;
         }
