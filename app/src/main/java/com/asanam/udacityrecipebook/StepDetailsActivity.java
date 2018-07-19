@@ -8,15 +8,17 @@ import android.util.Log;
 import com.asanam.udacityrecipebook.fragments.ExoPlayerFragment;
 import com.asanam.udacityrecipebook.fragments.StepDetailsFragment;
 import com.asanam.udacityrecipebook.utils.Constants;
+import com.google.android.exoplayer2.C;
 
 public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerFragment.ExoPlayerListener, StepDetailsFragment.StepDetailListener {
 
     public static final String TAG = StepDetailsActivity.class.getSimpleName();
     private Fragment stepDetailsFragment;
-    private int currentWindow = 0;
-    private long playbackPosition = 0;
     private long recipeId;
     private long stepId;
+    private long playbackPosition;
+    private int currentWindow;
+    private boolean playWhenReady;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,15 +30,19 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
 
         recipeId = stepDetails.getLong(Constants.RECIPE_ID);
         stepId = stepDetails.getLong(Constants.STEP_ID);
-
-//        stepDetailsFragment.setArguments(stepDetails);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: ");
-        ((StepDetailsFragment) stepDetailsFragment).showStepDetailsScreen(recipeId, stepId);
+        Bundle stepDetails = new Bundle();
+        stepDetails.putLong(Constants.RECIPE_ID, recipeId);
+        stepDetails.putLong(Constants.STEP_ID, stepId);
+        stepDetails.putLong(Constants.PLAYBACK_POSITION, playbackPosition);
+        stepDetails.putInt(Constants.CURRENT_WINDOW, currentWindow);
+        stepDetails.putBoolean(Constants.PLAYER_WHEN_READY, playWhenReady);
+        stepDetailsFragment.setArguments(stepDetails);
 
         Fragment exoPlayer = stepDetailsFragment.getChildFragmentManager().findFragmentById(R.id.frag_exo_player);
         if (exoPlayer != null) {
@@ -45,40 +51,38 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
     }
 
     @Override
-    public void onReleaseExoPlayer(long playbackPosition, int currentWindow) {
-        Log.d(TAG, "onReleaseExoPlayer: Exoplayer [" + playbackPosition + "," + currentWindow + "]");
+    public void onReleaseExoPlayer(long playbackPosition, int currentWindow, boolean playWhenReady) {
         this.playbackPosition = playbackPosition;
         this.currentWindow = currentWindow;
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        Log.d(TAG, "onSaveInstanceState: ");
-        Log.d(TAG, "onSaveInstanceState: Exoplayer [" + playbackPosition + "," + currentWindow + "]");
-        outState.putLong(Constants.PLAYBACK_POSITION, playbackPosition);
-        outState.putInt(Constants.CURRENT_WINDOW, currentWindow);
-        outState.putLong(Constants.RECIPE_ID, recipeId);
-        outState.putLong(Constants.STEP_ID, stepId);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        Log.d(TAG, "onRestoreInstanceState: ");
-        if (savedInstanceState != null) {
-            playbackPosition = savedInstanceState.getLong(Constants.PLAYBACK_POSITION);
-            currentWindow = savedInstanceState.getInt(Constants.CURRENT_WINDOW);
-            recipeId = savedInstanceState.getLong(Constants.RECIPE_ID);
-            stepId = savedInstanceState.getLong(Constants.STEP_ID);
-            Log.d(TAG, "onRestoreInstanceState: Exoplayer [" + playbackPosition + "," + currentWindow + "]");
-        }
-
+        this.playWhenReady = playWhenReady;
+        Log.d(TAG, "onReleaseExoPlayer: ");
     }
 
     @Override
     public void onSaveStepDetails(long recipeId, long stepId) {
         this.recipeId = recipeId;
         this.stepId = stepId;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putLong(Constants.RECIPE_ID, recipeId);
+        outState.putLong(Constants.STEP_ID, stepId);
+        outState.putLong(Constants.PLAYBACK_POSITION, playbackPosition);
+        outState.putInt(Constants.CURRENT_WINDOW, currentWindow);
+        outState.putBoolean(Constants.PLAYER_WHEN_READY, playWhenReady);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        stepId = savedInstanceState.getLong(Constants.STEP_ID);
+        recipeId = savedInstanceState.getLong(Constants.RECIPE_ID);
+        playbackPosition = savedInstanceState.getLong(Constants.PLAYBACK_POSITION);
+        currentWindow = savedInstanceState.getInt(Constants.CURRENT_WINDOW);
+        playWhenReady = savedInstanceState.getBoolean(Constants.PLAYER_WHEN_READY);
     }
 }

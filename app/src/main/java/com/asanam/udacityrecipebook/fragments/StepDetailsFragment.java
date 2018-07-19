@@ -53,17 +53,11 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
     public void onResume() {
         super.onResume();
 
-//        recipeId = getArguments().getLong("RECIPE_ID");
-//        stepId = getArguments().getLong("STEP_ID");
-//
-//        Log.d(StepDetailsFragment.class.getSimpleName(), "Recipe id : "+ recipeId +", Step id : "+ stepId);
-//
-//        presenter.showStepDetailsScreen(recipeId, stepId);
-    }
+        recipeId = getArguments().getLong("RECIPE_ID");
+        stepId = getArguments().getLong("STEP_ID");
 
-    public void showStepDetailsScreen(long recipeId, long stepId) {
-        this.recipeId = recipeId;
-        this.stepId = stepId;
+        Log.d(StepDetailsFragment.class.getSimpleName(), "Recipe id : "+ recipeId +", Step id : "+ stepId);
+
         presenter.showStepDetailsScreen(recipeId, stepId);
     }
 

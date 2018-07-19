@@ -4,7 +4,7 @@ import android.content.pm.ActivityInfo;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
+import android.widget.FrameLayout;
 
 import com.asanam.udacityrecipebook.fragments.ExoPlayerFragment;
 import com.asanam.udacityrecipebook.fragments.RecipeDetailsFragment;
@@ -26,8 +26,6 @@ public class TabletDetailsActivity extends AppCompatActivity implements RecipeDe
         recipeId = getIntent().getLongExtra(Constants.RECIPE_ID, -1);
 
         Fragment detailsFragment = getSupportFragmentManager().findFragmentById(R.id.frag_details);
-        stepDetailsFragment = getSupportFragmentManager().findFragmentById(R.id.frag_step_details_fragment);
-        stepDetailsFragment.getView().setVisibility(View.GONE);
 
         Bundle bundle = new Bundle();
         bundle.putLong(Constants.RECIPE_ID, recipeId);
@@ -37,21 +35,34 @@ public class TabletDetailsActivity extends AppCompatActivity implements RecipeDe
     @Override
     protected void onResume() {
         super.onResume();
+
+        FrameLayout frameLayout = findViewById(R.id.frag_step_details_fragment_container);
+        frameLayout.removeAllViews();
     }
 
     @Override
     public void onSelectStep(long recipeId, long stepId) {
-        if (stepDetailsFragment == null) {
-            stepDetailsFragment = getSupportFragmentManager().findFragmentById(R.id.frag_step_details_fragment);
-            exoPlayer = stepDetailsFragment.getChildFragmentManager().findFragmentById(R.id.frag_exo_player);
+
+        if(stepDetailsFragment != null) {
+            getSupportFragmentManager().beginTransaction().remove(stepDetailsFragment).commit();
         }
 
-        stepDetailsFragment.getView().setVisibility(View.VISIBLE);
-        if (exoPlayer != null) {
-            ((ExoPlayerFragment) exoPlayer).releasePlayer();
-        }
-
-        ((StepDetailsFragment) stepDetailsFragment).showStepDetailsScreen(recipeId, stepId);
+        stepDetailsFragment = new StepDetailsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putLong(Constants.RECIPE_ID, recipeId);
+        bundle.putLong(Constants.STEP_ID, stepId);
+        stepDetailsFragment.setArguments(bundle);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.frag_step_details_fragment_container, stepDetailsFragment)
+                .commit();
+//        exoPlayer = stepDetailsFragment.getChildFragmentManager().findFragmentById(R.id.frag_exo_player);
+//
+//        if (exoPlayer != null) {
+//            ((ExoPlayerFragment) exoPlayer).releasePlayer();
+//        }
+//
+//        ((StepDetailsFragment) stepDetailsFragment).showStepDetailsScreen(recipeId, stepId);
     }
 
     @Override
@@ -60,6 +71,14 @@ public class TabletDetailsActivity extends AppCompatActivity implements RecipeDe
     }
 
     @Override
-    public void onReleaseExoPlayer(long playbackPosition, int currentWindow) {
+    public void onReleaseExoPlayer(long playbackPosition, int currentWindow, boolean playWhenReady) {
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(stepDetailsFragment != null) {
+            getSupportFragmentManager().beginTransaction().remove(stepDetailsFragment).commit();
+        }
     }
 }

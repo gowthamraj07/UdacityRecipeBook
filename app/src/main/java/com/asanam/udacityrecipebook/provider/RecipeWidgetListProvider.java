@@ -40,6 +40,11 @@ public class RecipeWidgetListProvider implements RemoteViewsService.RemoteViewsF
                 null, null, null, null
         );
         ingredients = new ArrayList<>();
+
+        if(query == null) {
+            return;
+        }
+
         while(query.moveToNext()) {
             ingredients.add(query.getString(query.getColumnIndex(DBContract.IngredientsTable.COLUMN_INGREDIENT)));
         }
