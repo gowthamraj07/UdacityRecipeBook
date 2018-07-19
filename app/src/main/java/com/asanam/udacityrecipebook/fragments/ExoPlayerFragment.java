@@ -186,4 +186,22 @@ public class ExoPlayerFragment extends Fragment {
             initializePlayer(playerView);
         }
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putLong(Constants.PLAYBACK_POSITION, playbackPosition);
+        outState.putInt(Constants.CURRENT_WINDOW, currentWindow);
+        outState.putBoolean(Constants.PLAYER_WHEN_READY, playWhenReady);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            playbackPosition = savedInstanceState.getLong(Constants.PLAYBACK_POSITION);
+            currentWindow = savedInstanceState.getInt(Constants.CURRENT_WINDOW);
+            playWhenReady = savedInstanceState.getBoolean(Constants.PLAYER_WHEN_READY);
+        }
+    }
 }

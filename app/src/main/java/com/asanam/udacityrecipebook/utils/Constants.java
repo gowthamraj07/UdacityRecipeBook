@@ -10,4 +10,5 @@ public class Constants {
     public static final String STEP_DETAILS = "STEP_DETAILS";
     public static final String PLAYBACK_POSITION = "playbackPosition";
     public static final String CURRENT_WINDOW = "currentWindow";
+    public static final String PLAYER_WHEN_READY = "playerWhenReady";
 }
