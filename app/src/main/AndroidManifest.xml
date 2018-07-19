@@ -63,6 +63,10 @@
         </receiver>
 
         <activity android:name=".IngredientsActivity" android:launchMode="singleTop"/>
+
+        <service
+            android:name=".service.RecipeWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

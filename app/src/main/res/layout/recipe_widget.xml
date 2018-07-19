@@ -69,7 +69,7 @@
         android:layout_alignStart="@id/button_previous"
         android:layout_alignEnd="@id/button_next" />
 
-    <TextView
+    <ListView
         android:id="@+id/lv_ingredients"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -12,6 +12,7 @@ import android.widget.RemoteViews;
 
 import com.asanam.udacityrecipebook.db.DBContract;
 import com.asanam.udacityrecipebook.provider.RecipeProvider;
+import com.asanam.udacityrecipebook.service.RecipeWidgetService;
 import com.asanam.udacityrecipebook.utils.Constants;
 
 /**
@@ -25,7 +26,7 @@ public class RecipeWidget extends AppWidgetProvider {
     public static final String PREVIOUS = "PREVIOUS";
     public static final String ACTION = "com.asanam.udacityrecipebook.ACTION";
 
-    private static Long recipeId = -1L;
+    public static Long recipeId = -1L;
     private static boolean isAfterLast;
 
     private RemoteViews views;
@@ -43,9 +44,11 @@ public class RecipeWidget extends AppWidgetProvider {
             }
         }
 
-        if (!setWidgetValues(context, recipeId)) {
+        if (!setWidgetValues(context, recipeId, appWidgetId)) {
             return;
         }
+
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.lv_ingredients);
 
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra(Constants.RECIPE_ID, recipeId);
@@ -73,7 +76,7 @@ public class RecipeWidget extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
-    private boolean setWidgetValues(Context context, Long recipeId) {
+    private boolean setWidgetValues(Context context, Long recipeId, int appWidgetId) {
 
         Log.d(TAG, "setWidgetValues: recipeId = " + recipeId);
 
@@ -126,7 +129,10 @@ public class RecipeWidget extends AppWidgetProvider {
         // Construct the RemoteViews object
         views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget);
         views.setTextViewText(R.id.tv_recipe_title, widgetText);
-        views.setTextViewText(R.id.lv_ingredients, ingredientString);
+        Intent intent = new Intent(context, RecipeWidgetService.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        //intent.putExtra(Constants.RECIPE_ID, recipeId);
+        views.setRemoteAdapter(R.id.lv_ingredients, intent);
 
         return true;
     }
@@ -171,7 +177,7 @@ public class RecipeWidget extends AppWidgetProvider {
                 ++recipeId;
             }
         } else {
-            recipeId = recipeId == 0 ? 0 : --recipeId;
+            recipeId = recipeId == 1 ? 1 : --recipeId;
         }
 
         ComponentName thisWidget = new ComponentName(context, RecipeWidget.class);
