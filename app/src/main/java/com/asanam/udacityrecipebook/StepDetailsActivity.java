@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.FrameLayout;
 
 import com.asanam.udacityrecipebook.fragments.ExoPlayerFragment;
 import com.asanam.udacityrecipebook.fragments.StepDetailsFragment;
@@ -24,7 +25,6 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_details);
 
-        stepDetailsFragment = getSupportFragmentManager().findFragmentById(R.id.frag_step_details_fragment);
         Bundle stepDetails = getIntent().getBundleExtra(Constants.STEP_DETAILS);
 
         recipeId = stepDetails.getLong(Constants.RECIPE_ID);
@@ -35,13 +35,21 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: ");
-        Bundle stepDetails = new Bundle();
-        stepDetails.putLong(Constants.RECIPE_ID, recipeId);
-        stepDetails.putLong(Constants.STEP_ID, stepId);
-        stepDetails.putLong(Constants.PLAYBACK_POSITION, playbackPosition);
-        stepDetails.putInt(Constants.CURRENT_WINDOW, currentWindow);
-        stepDetails.putBoolean(Constants.PLAYER_WHEN_READY, playWhenReady);
-        stepDetailsFragment.setArguments(stepDetails);
+        loadStepDetailsFragment();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause: ");
+        super.onPause();
+        
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+
     }
 
     @Override
@@ -56,6 +64,18 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
     public void onSaveStepDetails(long recipeId, long stepId) {
         this.recipeId = recipeId;
         this.stepId = stepId;
+    }
+
+    @Override
+    public void onTraverseButtonListener(long recipeId, long newStepId) {
+        Log.d(TAG, "onTraverseButtonListener: ");
+        this.recipeId = recipeId;
+        this.stepId = newStepId;
+        this.playWhenReady = true;
+        this.playbackPosition = 0;
+        this.currentWindow = 0;
+
+        loadStepDetailsFragment();
     }
 
     @Override
@@ -79,4 +99,33 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
         currentWindow = savedInstanceState.getInt(Constants.CURRENT_WINDOW);
         playWhenReady = savedInstanceState.getBoolean(Constants.PLAYER_WHEN_READY, true);
     }
+
+    private void loadStepDetailsFragment() {
+
+        stepDetailsFragment = getSupportFragmentManager().findFragmentByTag(Constants.STEP_DETAILS_FRAG_TAG);
+        if(stepDetailsFragment != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .remove(stepDetailsFragment)
+                    .detach(stepDetailsFragment)
+                    .commit();
+        }
+
+        FrameLayout frameLayout = findViewById(R.id.frag_step_details_fragment_container);
+        frameLayout.removeAllViews();
+
+        Bundle stepDetails = new Bundle();
+        stepDetails.putLong(Constants.RECIPE_ID, recipeId);
+        stepDetails.putLong(Constants.STEP_ID, stepId);
+        stepDetails.putLong(Constants.PLAYBACK_POSITION, playbackPosition);
+        stepDetails.putInt(Constants.CURRENT_WINDOW, currentWindow);
+        stepDetails.putBoolean(Constants.PLAYER_WHEN_READY, playWhenReady);
+
+        stepDetailsFragment = new StepDetailsFragment();
+        stepDetailsFragment.setArguments(stepDetails);
+        getSupportFragmentManager().beginTransaction()
+                .disallowAddToBackStack()
+                .add(R.id.frag_step_details_fragment_container, stepDetailsFragment, Constants.STEP_DETAILS_FRAG_TAG)
+                .commit();
+    }
+
 }

@@ -63,6 +63,11 @@ public class TabletDetailsActivity extends AppCompatActivity implements RecipeDe
     }
 
     @Override
+    public void onTraverseButtonListener(long recipeId, long newStepId) {
+
+    }
+
+    @Override
     public void onReleaseExoPlayer(long playbackPosition, int currentWindow, boolean playWhenReady) {
     }
 

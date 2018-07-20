@@ -192,14 +192,18 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
 
     public interface StepDetailListener {
         void onSaveStepDetails(long recipeId, long stepId);
+        void onTraverseButtonListener(long recipeId, long newStepId);
     }
 
     private class PreviousButtonListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
             stepId--;
-            releasePlayer();
-            presenter.showStepDetailsScreen(recipeId, stepId);
+//            releasePlayer();
+//            presenter.showStepDetailsScreen(recipeId, stepId);
+            if(listener != null) {
+                listener.onTraverseButtonListener(recipeId, stepId);
+            }
         }
     }
 
@@ -207,8 +211,11 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
         @Override
         public void onClick(View view) {
             stepId++;
-            releasePlayer();
-            presenter.showStepDetailsScreen(recipeId, stepId);
+//            releasePlayer();
+//            presenter.showStepDetailsScreen(recipeId, stepId);
+            if(listener != null) {
+                listener.onTraverseButtonListener(recipeId, stepId);
+            }
         }
     }
 
