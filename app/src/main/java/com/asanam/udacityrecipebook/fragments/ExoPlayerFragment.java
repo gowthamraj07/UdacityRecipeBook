@@ -84,6 +84,7 @@ public class ExoPlayerFragment extends Fragment {
         if (listener != null && player != null) {
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
+            playWhenReady = player.getPlayWhenReady();
             listener.onReleaseExoPlayer(playbackPosition, currentWindow, playWhenReady);
         }
 
