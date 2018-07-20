@@ -12,4 +12,5 @@ public class Constants {
     public static final String CURRENT_WINDOW = "currentWindow";
     public static final String PLAYER_WHEN_READY = "playerWhenReady";
     public static final String STEP_DETAILS_FRAG_TAG = "STEP_DETAILS_FRAG_TAG";
+    public static final String IS_NOTHING_SELECTED = "IS NOTHING SELECTED";
 }
