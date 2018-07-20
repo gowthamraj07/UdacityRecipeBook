@@ -39,20 +39,6 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
     }
 
     @Override
-    protected void onPause() {
-        Log.d(TAG, "onPause: ");
-        super.onPause();
-        
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop: ");
-
-    }
-
-    @Override
     public void onReleaseExoPlayer(long playbackPosition, int currentWindow, boolean playWhenReady) {
         this.playbackPosition = playbackPosition;
         this.currentWindow = currentWindow;
