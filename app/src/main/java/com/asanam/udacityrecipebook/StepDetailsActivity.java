@@ -1,14 +1,13 @@
 package com.asanam.udacityrecipebook;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.asanam.udacityrecipebook.fragments.ExoPlayerFragment;
 import com.asanam.udacityrecipebook.fragments.StepDetailsFragment;
 import com.asanam.udacityrecipebook.utils.Constants;
-import com.google.android.exoplayer2.C;
 
 public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerFragment.ExoPlayerListener, StepDetailsFragment.StepDetailListener {
 
@@ -18,7 +17,7 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
     private long stepId;
     private long playbackPosition;
     private int currentWindow;
-    private boolean playWhenReady;
+    private boolean playWhenReady = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +42,6 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
         stepDetails.putInt(Constants.CURRENT_WINDOW, currentWindow);
         stepDetails.putBoolean(Constants.PLAYER_WHEN_READY, playWhenReady);
         stepDetailsFragment.setArguments(stepDetails);
-
-        Fragment exoPlayer = stepDetailsFragment.getChildFragmentManager().findFragmentById(R.id.frag_exo_player);
-        if (exoPlayer != null) {
-            ((ExoPlayerFragment) exoPlayer).seekTo(playbackPosition, currentWindow);
-        }
     }
 
     @Override
@@ -83,6 +77,6 @@ public class StepDetailsActivity extends AppCompatActivity implements ExoPlayerF
         recipeId = savedInstanceState.getLong(Constants.RECIPE_ID);
         playbackPosition = savedInstanceState.getLong(Constants.PLAYBACK_POSITION);
         currentWindow = savedInstanceState.getInt(Constants.CURRENT_WINDOW);
-        playWhenReady = savedInstanceState.getBoolean(Constants.PLAYER_WHEN_READY);
+        playWhenReady = savedInstanceState.getBoolean(Constants.PLAYER_WHEN_READY, true);
     }
 }

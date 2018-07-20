@@ -30,7 +30,6 @@ import com.google.android.exoplayer2.util.Util;
 public class ExoPlayerFragment extends Fragment {
 
     public static final String TAG = ExoPlayerFragment.class.getSimpleName();
-    public static String URI_STRING = null;
     private boolean playWhenReady;
     private PlayerView playerView;
     private SimpleExoPlayer player;
@@ -49,9 +48,7 @@ public class ExoPlayerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.exo_player_fragment_layout, container, false);
-
         playerView = fragmentView.findViewById(R.id.player_view);
-
         return fragmentView;
     }
 
@@ -84,7 +81,6 @@ public class ExoPlayerFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
         if (listener != null && player != null) {
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
@@ -104,9 +100,9 @@ public class ExoPlayerFragment extends Fragment {
         }
     }
 
-    private void initializePlayer(PlayerView playerView) {
+    private void initializePlayer(PlayerView playerView, String videoUrl) {
 
-        if (URI_STRING == null) {
+        if (videoUrl == null) {
             return;
         }
 
@@ -117,20 +113,19 @@ public class ExoPlayerFragment extends Fragment {
             DefaultTrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
             player = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector);
 
-            Uri videoUri = Uri.parse(URI_STRING);
+            Uri videoUri = Uri.parse(videoUrl);
 
             DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory(TAG);
             ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
             mediaSource = new ExtractorMediaSource(videoUri, dataSourceFactory, extractorsFactory, null, null);
 
             playerView.setPlayer(player);
-
-            player.setPlayWhenReady(playWhenReady);
         }
 
         player.prepare(mediaSource);
-        Log.d(TAG, "initializePlayer: seekTo["+playbackPosition+","+currentWindow+"]");
+        Log.d(TAG, "initializePlayer: seekTo[" + playbackPosition + "," + currentWindow + "]");
         player.seekTo(currentWindow, playbackPosition);
+        player.setPlayWhenReady(playWhenReady);
     }
 
     public void releasePlayer() {
@@ -143,48 +138,19 @@ public class ExoPlayerFragment extends Fragment {
         }
     }
 
-    public void showVideo(String url) {
-
-        releasePlayer();
-
-        if (!url.equals(URI_STRING)) {
-            this.playbackPosition = 0;
-            this.currentWindow = 0;
-        }
-
-        URI_STRING = url;
-
-        Log.d(TAG, "showVideo: URL : " + URI_STRING);
-
-        if (URI_STRING != null) {
-            try {
-                initializePlayer(playerView);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void seekTo(long playbackPosition, int currentWindow) {
-        Log.d(TAG, "seekTo: [" + playbackPosition + "," + currentWindow + "]");
-        this.playbackPosition = playbackPosition;
-        this.currentWindow = currentWindow;
-        if (player != null) {
-            player.seekTo(currentWindow, playbackPosition);
-        }
-    }
-
     public interface ExoPlayerListener {
         void onReleaseExoPlayer(long playbackPosition, int currentWindow, boolean playWhenReady);
     }
 
     private void initializePlayer() {
-//        if (getArguments() != null) {
-//            URI_STRING = getArguments().getString(Constants.VIDEO_URL);
-//        }
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            String videoUrl = arguments.getString(Constants.VIDEO_URL);
+            playbackPosition = arguments.getLong(Constants.PLAYBACK_POSITION, playbackPosition);
+            currentWindow = arguments.getInt(Constants.CURRENT_WINDOW, currentWindow);
+            playWhenReady = arguments.getBoolean(Constants.PLAYER_WHEN_READY, true);
 
-        if (URI_STRING != null) {
-            initializePlayer(playerView);
+            initializePlayer(playerView, videoUrl);
         }
     }
 

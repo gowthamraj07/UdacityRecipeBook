@@ -18,7 +18,7 @@ public class StepDetailsPresenter {
 
     public void showStepDetailsScreen(Long recipeId, Long stepId) {
 
-        view.reset();
+        view.initializeViews();
 
         Cursor stepDetails = repository.getStepDetails(stepId, recipeId);
         if(stepDetails.getCount() == 0) {

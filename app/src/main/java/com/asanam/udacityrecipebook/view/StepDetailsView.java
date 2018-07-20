@@ -10,14 +10,11 @@ public interface StepDetailsView {
 
 
     void hidePrevious();
-
     void showPrevious();
 
     void showNext();
-
     void hideNext();
 
-    void reset();
-
+    void initializeViews();
     void hideImageAndVideo();
 }

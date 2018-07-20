@@ -264,6 +264,6 @@ public class StepDetailsPresenterTest {
         when(repository.getNextStepDetails(RECIPE_ID, STEP_ID)).thenReturn(previousCursor);
         presenter.showStepDetailsScreen(RECIPE_ID, STEP_ID);
 
-        verify(view).reset();
+        verify(view).initializeViews();
     }
 }

@@ -12,11 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.asanam.udacityrecipebook.R;
-import com.asanam.udacityrecipebook.dto.Step;
 import com.asanam.udacityrecipebook.presenter.StepDetailsPresenter;
 import com.asanam.udacityrecipebook.repository.DBRepository;
 import com.asanam.udacityrecipebook.repository.RecipeDBRepository;
@@ -27,7 +27,6 @@ import com.squareup.picasso.Picasso;
 public class StepDetailsFragment extends Fragment implements StepDetailsView {
 
     private StepDetailsPresenter presenter;
-    private Bundle bundle;
     private View detailsFragmentView;
     private Fragment exoPlayerFragment;
     private ImageView ivThumbnail;
@@ -37,6 +36,7 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
     private long stepId;
 
     private StepDetailListener listener;
+    private FrameLayout exoPlayerContainer;
 
     @Nullable
     @Override
@@ -45,6 +45,7 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
 
         DBRepository repository = new RecipeDBRepository(getContext());
         presenter = new StepDetailsPresenter(this, repository);
+        exoPlayerFragment = new ExoPlayerFragment();
 
         return detailsFragmentView;
     }
@@ -53,10 +54,12 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
     public void onResume() {
         super.onResume();
 
+        if(getArguments() == null) {
+            return;
+        }
+
         recipeId = getArguments().getLong("RECIPE_ID");
         stepId = getArguments().getLong("STEP_ID");
-
-        Log.d(StepDetailsFragment.class.getSimpleName(), "Recipe id : "+ recipeId +", Step id : "+ stepId);
 
         presenter.showStepDetailsScreen(recipeId, stepId);
     }
@@ -64,7 +67,7 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (!(getActivity() instanceof StepDetailListener)) {
+        if (getActivity()!=null && !(getActivity() instanceof StepDetailListener)) {
             throw new ClassCastException(getActivity().toString() + " must implement "+StepDetailListener.class.getSimpleName());
         }
 
@@ -75,20 +78,40 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
     public void onPause() {
         listener.onSaveStepDetails(recipeId, stepId);
         super.onPause();
+        releasePlayer();
     }
 
     @Override
     public void showVideo(String url, String description) {
-        bundle = new Bundle();
-        bundle.putString(Constants.VIDEO_URL, url);
-
         Log.d(StepDetailsFragment.class.getSimpleName(), "VIDEO_URL : "+url);
 
         showGuideLine();
 
-        if(exoPlayerFragment != null) {
-            ((ExoPlayerFragment) exoPlayerFragment).showVideo(url);
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.VIDEO_URL, url);
+
+        Bundle arguments = getArguments();
+        if(arguments != null) {
+            bundle.putLong(Constants.PLAYBACK_POSITION, arguments.getLong(Constants.PLAYBACK_POSITION, 0));
+            bundle.putInt(Constants.CURRENT_WINDOW, arguments.getInt(Constants.CURRENT_WINDOW, 0));
+            boolean playWhenReady = arguments.getBoolean(Constants.PLAYER_WHEN_READY, true);
+            bundle.putBoolean(Constants.PLAYER_WHEN_READY, playWhenReady);
         }
+
+        if(exoPlayerFragment != null) {
+            getChildFragmentManager()
+                    .beginTransaction()
+                    .remove(exoPlayerFragment)
+                    .commit();
+        } else {
+            exoPlayerFragment = new ExoPlayerFragment();
+        }
+
+        exoPlayerFragment.setArguments(bundle);
+        getChildFragmentManager()
+                .beginTransaction()
+                .add(R.id.frag_exo_player_container, exoPlayerFragment)
+                .commit();
 
         showDescription(description);
     }
@@ -116,10 +139,8 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
 
     @Override
     public void hideVideo() {
-        if(exoPlayerFragment != null && exoPlayerFragment.getView() != null) {
-            exoPlayerFragment.getView().setVisibility(View.GONE);
-            ((ExoPlayerFragment) exoPlayerFragment).releasePlayer();
-        }
+        releasePlayer();
+        exoPlayerContainer.removeAllViews();
     }
 
     @Override
@@ -143,13 +164,11 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
     }
 
     @Override
-    public void reset() {
-        exoPlayerFragment = getChildFragmentManager().findFragmentById(R.id.frag_exo_player);
-        if(exoPlayerFragment != null && exoPlayerFragment.getView() != null) {
-            exoPlayerFragment.getView().setVisibility(View.VISIBLE);
-        }
-        ivThumbnail = detailsFragmentView.findViewById(R.id.iv_thumbnail);
+    public void initializeViews() {
+        exoPlayerContainer = detailsFragmentView.findViewById(R.id.frag_exo_player_container);
+        exoPlayerContainer.removeAllViews();
 
+        ivThumbnail = detailsFragmentView.findViewById(R.id.iv_thumbnail);
         btnPrevious = detailsFragmentView.findViewById(R.id.btn_previous);
         btnPrevious.setOnClickListener(new PreviousButtonListener());
 
@@ -171,11 +190,15 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
         tvDescription.setText(description);
     }
 
+    public interface StepDetailListener {
+        void onSaveStepDetails(long recipeId, long stepId);
+    }
+
     private class PreviousButtonListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
             stepId--;
-            ((ExoPlayerFragment) exoPlayerFragment).releasePlayer();
+            releasePlayer();
             presenter.showStepDetailsScreen(recipeId, stepId);
         }
     }
@@ -184,12 +207,36 @@ public class StepDetailsFragment extends Fragment implements StepDetailsView {
         @Override
         public void onClick(View view) {
             stepId++;
-            ((ExoPlayerFragment) exoPlayerFragment).releasePlayer();
+            releasePlayer();
             presenter.showStepDetailsScreen(recipeId, stepId);
         }
     }
 
-    public interface StepDetailListener {
-        void onSaveStepDetails(long recipeId, long stepId);
+    private void releasePlayer() {
+        if(exoPlayerFragment != null) {
+            getChildFragmentManager().beginTransaction()
+                    .remove(exoPlayerFragment)
+                    .commit();
+        }
+
+        if(exoPlayerContainer != null) {
+            exoPlayerContainer.removeAllViews();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putLong(Constants.RECIPE_ID, recipeId);
+        outState.putLong(Constants.STEP_ID, stepId);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState != null) {
+            recipeId = savedInstanceState.getLong(Constants.RECIPE_ID);
+            stepId = savedInstanceState.getLong(Constants.STEP_ID);
+        }
     }
 }

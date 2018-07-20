@@ -14,7 +14,6 @@ import com.asanam.udacityrecipebook.utils.Constants;
 public class TabletDetailsActivity extends AppCompatActivity implements RecipeDetailsFragment.StepSelectionListener, StepDetailsFragment.StepDetailListener, ExoPlayerFragment.ExoPlayerListener {
 
     private long recipeId;
-    private Fragment exoPlayer;
     private Fragment stepDetailsFragment;
 
     @Override
@@ -56,13 +55,6 @@ public class TabletDetailsActivity extends AppCompatActivity implements RecipeDe
                 .beginTransaction()
                 .add(R.id.frag_step_details_fragment_container, stepDetailsFragment)
                 .commit();
-//        exoPlayer = stepDetailsFragment.getChildFragmentManager().findFragmentById(R.id.frag_exo_player);
-//
-//        if (exoPlayer != null) {
-//            ((ExoPlayerFragment) exoPlayer).releasePlayer();
-//        }
-//
-//        ((StepDetailsFragment) stepDetailsFragment).showStepDetailsScreen(recipeId, stepId);
     }
 
     @Override

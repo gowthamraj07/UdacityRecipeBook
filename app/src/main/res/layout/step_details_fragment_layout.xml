@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <fragment
-        android:id="@+id/frag_exo_player"
+    <FrameLayout
+        android:id="@+id/frag_exo_player_container"
         android:name="com.asanam.udacityrecipebook.fragments.ExoPlayerFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
